@@ -4,7 +4,7 @@ export const mockSignals: Signal[] = [
   {
     id: 'signal-1',
     title: '本源量子完成数亿元C轮融资',
-    type: '融资',
+    type: '融资事件',
     source: '36氪',
     timestamp: '2026-02-01',
     priority: 'high',
@@ -24,7 +24,7 @@ export const mockSignals: Signal[] = [
   {
     id: 'signal-3',
     title: '启科量子完成工商变更登记',
-    type: '工商',
+    type: '产业化进展',
     source: '企查查',
     timestamp: '2026-01-28',
     priority: 'low',
@@ -34,7 +34,7 @@ export const mockSignals: Signal[] = [
   {
     id: 'signal-4',
     title: '科技部发布量子信息技术专项指南',
-    type: '政策',
+    type: '政策规划',
     source: '科技部官网',
     timestamp: '2026-01-25',
     priority: 'mid',
