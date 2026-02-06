@@ -2,7 +2,7 @@
 
 import { apiClient, useMock } from './client';
 import { SignalDetail, SignalFilters, SignalListResponse } from '../types';
-import { mockSignals } from '../mock/signals';
+import { realWorldSignals } from '../data/realWorldSignals';
 
 export const signalApi = {
   /**
@@ -10,10 +10,10 @@ export const signalApi = {
    */
   getSignals: async (filters?: SignalFilters): Promise<SignalListResponse> => {
     if (useMock) {
-      // Mock实现
+      // Mock实现 - 使用真实量子科技数据
       await new Promise(resolve => setTimeout(resolve, 300)); // 模拟网络延迟
       
-      let filteredSignals = [...mockSignals];
+      let filteredSignals = [...realWorldSignals];
       
       // 类型筛选
       if (filters?.type && filters.type !== '全部') {
@@ -24,12 +24,26 @@ export const signalApi = {
       if (filters?.priority && filters.priority !== 'all') {
         filteredSignals = filteredSignals.filter(s => s.priority === filters.priority);
       }
+
+      // 时间范围筛选
+      if (filters?.timeRange && filters.timeRange !== 'all') {
+        const days = parseInt(filters.timeRange);
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - days);
+        filteredSignals = filteredSignals.filter(s => new Date(s.timestamp) >= cutoffDate);
+      }
+
+      // 分页
+      const page = filters?.page || 1;
+      const pageSize = filters?.pageSize || 20;
+      const start = (page - 1) * pageSize;
+      const paginatedSignals = filteredSignals.slice(start, start + pageSize);
       
       return {
         total: filteredSignals.length,
-        page: filters?.page || 1,
-        pageSize: filters?.pageSize || 20,
-        signals: filteredSignals,
+        page,
+        pageSize,
+        signals: paginatedSignals,
       };
     }
 
@@ -49,16 +63,16 @@ export const signalApi = {
   getSignalById: async (id: string): Promise<SignalDetail> => {
     if (useMock) {
       await new Promise(resolve => setTimeout(resolve, 200));
-      const signal = mockSignals.find(s => s.id === id);
+      const signal = realWorldSignals.find(s => s.id === id);
       if (!signal) {
         throw new Error(`Signal not found: ${id}`);
       }
       return {
         ...signal,
         whyImportant: [
-          '融资金额显著高于同类企业',
-          '团队来自已关注的核心研究机构',
-          '与近期政策导向高度相关',
+          '代表量子科技领域重要进展',
+          '涉及核心技术突破或产业化应用',
+          '与国家战略规划高度相关',
         ],
       };
     }

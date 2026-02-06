@@ -4,6 +4,7 @@ import SignalCard from '../components/SignalCard';
 import SignalDetailModal from '../components/SignalDetailModal';
 import { useSignals } from '../hooks/useSignals';
 import { Signal, SignalType } from '../types';
+import { realWorldSignals } from '../data/realWorldSignals';
 
 const signalTypes: (SignalType | '全部')[] = ['全部', '论文', '政策规划', '融资事件', '产业化进展', '技术发布', '人才组织'];
 
@@ -14,8 +15,11 @@ export default function SignalFeed() {
   const { signals, loading, filters, updateFilters } = useSignals({
     type: '全部',
     priority: 'all',
-    timeRange: '7',
+    timeRange: 'all',  // 默认显示全部时间
   });
+
+  // 用于统计的所有信号（未过滤）
+  const allSignals = realWorldSignals;
 
   // Filter signals by search query
   const filteredSignals = searchQuery
@@ -35,7 +39,7 @@ export default function SignalFeed() {
           {searchQuery ? (
             <>搜索 "{searchQuery}" · 找到 {filteredSignals.length} 条信号</>
           ) : (
-            <>实时追踪量子科技领域的关键信号 · 共 {signals.length} 条信号</>
+            <>实时追踪量子科技领域的关键信号 · 共 {allSignals.length} 条信号</>
           )}
         </p>
       </div>
@@ -57,7 +61,7 @@ export default function SignalFeed() {
                 {type}
                 {type !== '全部' && (
                   <span className="ml-2 text-xs opacity-70">
-                    ({signals.filter(s => s.type === type).length})
+                    ({allSignals.filter(s => s.type === type).length})
                   </span>
                 )}
               </button>
@@ -65,10 +69,11 @@ export default function SignalFeed() {
           </div>
           <div className="flex gap-3">
             <select
-              value={filters.timeRange || '7'}
-              onChange={(e) => updateFilters({ timeRange: e.target.value as '7' | '30' | '90' })}
+              value={filters.timeRange || 'all'}
+              onChange={(e) => updateFilters({ timeRange: e.target.value as any })}
               className="bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
             >
+              <option value="all">全部时间</option>
               <option value="7">最近 7 天</option>
               <option value="30">最近 30 天</option>
               <option value="90">最近 90 天</option>
@@ -79,9 +84,9 @@ export default function SignalFeed() {
               className="bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
             >
               <option value="all">优先级：全部</option>
-              <option value="high">高优先级 ({signals.filter(s => s.priority === 'high').length})</option>
-              <option value="mid">中优先级 ({signals.filter(s => s.priority === 'mid').length})</option>
-              <option value="low">低优先级 ({signals.filter(s => s.priority === 'low').length})</option>
+              <option value="high">高优先级 ({allSignals.filter(s => s.priority === 'high').length})</option>
+              <option value="mid">中优先级 ({allSignals.filter(s => s.priority === 'mid').length})</option>
+              <option value="low">低优先级 ({allSignals.filter(s => s.priority === 'low').length})</option>
             </select>
           </div>
         </div>

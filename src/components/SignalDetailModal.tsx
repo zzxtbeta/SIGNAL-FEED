@@ -2,7 +2,7 @@ import { X, Building2, User, Lightbulb, ExternalLink, MessageSquare, Bookmark, F
 import { useState } from 'react';
 import { Signal, SignalType } from '../types';
 import { useAppContext } from '../contexts/AppContext';
-import { mockSignals } from '../mock/signals';
+import { realWorldSignals } from '../data/realWorldSignals';
 
 interface SignalDetailModalProps {
   signal: Signal;
@@ -42,7 +42,7 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
   const config = priorityConfig[signal.priority];
 
   // Get related signals (mock - in real app would come from API)
-  const relatedSignals = mockSignals.filter(s => s.id !== signal.id).slice(0, 8);
+  const relatedSignals = realWorldSignals.filter(s => s.id !== signal.id).slice(0, 8);
   
   // Filter related signals by active tab
   const filteredRelatedSignals = activeTab === '全部' 

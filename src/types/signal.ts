@@ -30,7 +30,7 @@ export interface SignalDetail extends Signal {
 export interface SignalFilters {
   type?: SignalType | '全部';
   priority?: SignalPriority | 'all';
-  timeRange?: '7' | '30' | '90';
+  timeRange?: '7' | '30' | '90' | 'all';
   page?: number;
   pageSize?: number;
 }
