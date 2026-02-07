@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useCandidates } from '../hooks/useCandidates';
-import { Building2, MapPin, TrendingUp, Star } from 'lucide-react';
+import { Building2, MapPin, TrendingUp, Star, GripVertical } from 'lucide-react';
+import { useLayout } from '../contexts/LayoutContext';
 
 export default function Candidates() {
   const { candidates, loading, updateFilters } = useCandidates();
+  const { setDraggedItem, isChatOpen } = useLayout();
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [selectedTechRoute, setSelectedTechRoute] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'signalCount' | 'recent'>('signalCount');
@@ -99,12 +101,37 @@ export default function Candidates() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {candidates.length > 0 ? (
-            candidates.map((candidate, index) => (
-              <div
-                key={candidate.id}
-                className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-orange-600 transition-all duration-200 cursor-pointer group animate-in fade-in slide-in-from-bottom-4"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
+            candidates.map((candidate, index) => {
+              const handleDragStart = (e: React.DragEvent) => {
+                setDraggedItem({
+                  type: 'candidate',
+                  id: candidate.id,
+                  title: candidate.name,
+                  summary: candidate.description || `${candidate.location} · ${candidate.techRoute}`,
+                });
+                e.dataTransfer.effectAllowed = 'copy';
+              };
+
+              const handleDragEnd = () => {
+                setDraggedItem(null);
+              };
+
+              return (
+                <div
+                  key={candidate.id}
+                  draggable={isChatOpen}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  className={`bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-orange-600 transition-all duration-200 cursor-pointer group animate-in fade-in slide-in-from-bottom-4 relative ${
+                    isChatOpen ? 'cursor-grab active:cursor-grabbing' : ''
+                  }`}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  {isChatOpen && (
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <GripVertical className="w-4 h-4 text-neutral-500" />
+                    </div>
+                  )}
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -182,7 +209,8 @@ export default function Candidates() {
                   </div>
                 </div>
               </div>
-            ))
+              );
+            })
           ) : (
             <div className="col-span-2 bg-neutral-900 border border-neutral-800 rounded-lg p-12 text-center">
               <div className="text-6xl mb-4">🎯</div>

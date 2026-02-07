@@ -1,10 +1,7 @@
 import { Search, MessageSquare, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface NavbarProps {
-  onChatToggle: () => void;
-}
+import { useLayout } from '../contexts/LayoutContext';
 
 const tracks = [
   { id: 'quantum', name: '量子科技', status: 'active' },
@@ -15,8 +12,9 @@ const tracks = [
   { id: 'space-tech', name: '商业航天', status: 'coming' },
 ];
 
-export default function Navbar({ onChatToggle }: NavbarProps) {
+export default function Navbar() {
   const navigate = useNavigate();
+  const { isChatOpen, toggleChat } = useLayout();
   const [selectedTrack, setSelectedTrack] = useState('quantum');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -94,8 +92,12 @@ export default function Navbar({ onChatToggle }: NavbarProps) {
             />
           </form>
           <button
-            onClick={onChatToggle}
-            className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 px-4 py-1.5 rounded text-sm font-semibold transition-colors"
+            onClick={toggleChat}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded text-sm font-semibold transition-colors ${
+              isChatOpen 
+                ? 'bg-orange-600 hover:bg-orange-700' 
+                : 'bg-neutral-800 hover:bg-neutral-700'
+            }`}
           >
             <MessageSquare className="w-4 h-4" />
             Chat

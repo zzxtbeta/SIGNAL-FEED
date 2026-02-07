@@ -1,5 +1,6 @@
-import { Building2, User, Lightbulb, Bookmark } from 'lucide-react';
+import { Building2, User, Lightbulb, Bookmark, GripVertical } from 'lucide-react';
 import { Signal } from '../types';
+import { useLayout } from '../contexts/LayoutContext';
 
 interface SignalCardProps {
   signal: Signal;
@@ -32,12 +33,37 @@ const priorityConfig = {
 
 export default function SignalCard({ signal, onClick }: SignalCardProps) {
   const config = priorityConfig[signal.priority];
+  const { setDraggedItem, isChatOpen } = useLayout();
+
+  const handleDragStart = (e: React.DragEvent) => {
+    setDraggedItem({
+      type: 'signal',
+      id: signal.id,
+      title: signal.title,
+      summary: signal.summary,
+    });
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+  };
 
   return (
     <article
+      draggable={isChatOpen}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onClick={onClick}
-      className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden hover:border-orange-600 transition-all duration-200 cursor-pointer group"
+      className={`bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden hover:border-orange-600 transition-all duration-200 cursor-pointer group relative ${
+        isChatOpen ? 'cursor-grab active:cursor-grabbing' : ''
+      }`}
     >
+      {isChatOpen && (
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <GripVertical className="w-4 h-4 text-neutral-500" />
+        </div>
+      )}
       <div className="flex">
         <div className={`w-1 ${config.color}`} />
         <div className="flex-1 p-6">

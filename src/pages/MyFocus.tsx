@@ -1,9 +1,11 @@
-import { Star, Building2, User, Lightbulb, Plus, Bell, TrendingUp } from 'lucide-react';
+import { Star, Building2, User, Lightbulb, Plus, Bell, TrendingUp, GripVertical } from 'lucide-react';
 import { useState } from 'react';
 import { useAppContext } from '../contexts/AppContext';
+import { useLayout } from '../contexts/LayoutContext';
 
 export default function MyFocus() {
   const { focusItems } = useAppContext();
+  const { setDraggedItem, isChatOpen } = useLayout();
   const [activeTab, setActiveTab] = useState<'all' | 'company' | 'person' | 'technology'>('all');
 
   const filteredItems = activeTab === 'all' 
@@ -99,12 +101,37 @@ export default function MyFocus() {
 
       {/* Focus Items */}
       <div className="space-y-4">
-        {filteredItems.map((item, index) => (
-          <div
-            key={item.id}
-            className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-orange-600 transition-all duration-200 animate-in fade-in slide-in-from-bottom-4"
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
+        {filteredItems.map((item, index) => {
+          const handleDragStart = (e: React.DragEvent) => {
+            setDraggedItem({
+              type: item.type === 'company' ? 'candidate' : 'note',
+              id: item.id,
+              title: item.name,
+              summary: item.description,
+            });
+            e.dataTransfer.effectAllowed = 'copy';
+          };
+
+          const handleDragEnd = () => {
+            setDraggedItem(null);
+          };
+
+          return (
+            <div
+              key={item.id}
+              draggable={isChatOpen}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              className={`bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-orange-600 transition-all duration-200 animate-in fade-in slide-in-from-bottom-4 relative ${
+                isChatOpen ? 'cursor-grab active:cursor-grabbing' : ''
+              }`}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              {isChatOpen && (
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <GripVertical className="w-4 h-4 text-neutral-500" />
+                </div>
+              )}
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-600 rounded flex items-center justify-center flex-shrink-0 text-white">
@@ -154,7 +181,8 @@ export default function MyFocus() {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {filteredItems.length === 0 && (

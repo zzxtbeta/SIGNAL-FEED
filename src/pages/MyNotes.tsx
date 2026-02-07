@@ -1,10 +1,12 @@
-import { FileText, Plus, Search, Calendar, Tag } from 'lucide-react';
+import { FileText, Plus, Search, Calendar, Tag, GripVertical } from 'lucide-react';
 import { useState } from 'react';
 import { useAppContext, Note } from '../contexts/AppContext';
+import { useLayout } from '../contexts/LayoutContext';
 import NoteDetailModal from '../components/NoteDetailModal';
 
 export default function MyNotes() {
   const { notes, removeNote } = useAppContext();
+  const { setDraggedItem, isChatOpen } = useLayout();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
@@ -44,13 +46,38 @@ export default function MyNotes() {
 
       {/* Notes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredNotes.map((note, index) => (
-          <div
-            key={note.id}
-            onClick={() => setSelectedNote(note)}
-            className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-orange-600 transition-all duration-200 cursor-pointer group animate-in fade-in slide-in-from-bottom-4"
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
+        {filteredNotes.map((note, index) => {
+          const handleDragStart = (e: React.DragEvent) => {
+            setDraggedItem({
+              type: 'note',
+              id: note.id,
+              title: note.title,
+              summary: note.content.substring(0, 100),
+            });
+            e.dataTransfer.effectAllowed = 'copy';
+          };
+
+          const handleDragEnd = () => {
+            setDraggedItem(null);
+          };
+
+          return (
+            <div
+              key={note.id}
+              draggable={isChatOpen}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onClick={() => setSelectedNote(note)}
+              className={`bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-orange-600 transition-all duration-200 cursor-pointer group animate-in fade-in slide-in-from-bottom-4 relative ${
+                isChatOpen ? 'cursor-grab active:cursor-grabbing' : ''
+              }`}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              {isChatOpen && (
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <GripVertical className="w-4 h-4 text-neutral-500" />
+                </div>
+              )}
             {/* Header */}
             <div className="flex items-start gap-3 mb-4">
               <div className="w-10 h-10 bg-gradient-to-br from-orange-600 to-red-600 rounded flex items-center justify-center flex-shrink-0 text-white">
@@ -93,7 +120,8 @@ export default function MyNotes() {
               </span>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Note Detail Modal */}
