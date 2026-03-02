@@ -9,24 +9,27 @@ interface SignalCardProps {
 
 const priorityConfig = {
   high: {
-    color: 'bg-red-600',
-    bgColor: 'bg-red-600/20',
-    textColor: 'text-red-500',
-    borderColor: 'border-red-600/30',
+    dotColor: 'bg-red-500',
+    gradientBar: 'from-red-500/60 via-red-500/20 to-transparent',
+    badgeBg: 'bg-red-500/10',
+    textColor: 'text-red-400',
+    borderColor: 'border-red-500/25',
     label: '高',
   },
   mid: {
-    color: 'bg-amber-500',
-    bgColor: 'bg-amber-500/20',
-    textColor: 'text-amber-500',
-    borderColor: 'border-amber-500/30',
+    dotColor: 'bg-amber-400',
+    gradientBar: 'from-amber-400/60 via-amber-400/20 to-transparent',
+    badgeBg: 'bg-amber-400/10',
+    textColor: 'text-amber-400',
+    borderColor: 'border-amber-400/25',
     label: '中',
   },
   low: {
-    color: 'bg-neutral-600',
-    bgColor: 'bg-neutral-700/50',
-    textColor: 'text-neutral-400',
-    borderColor: 'border-neutral-700',
+    dotColor: 'bg-slate-500',
+    gradientBar: 'from-slate-600/40 via-slate-600/10 to-transparent',
+    badgeBg: 'bg-slate-700/40',
+    textColor: 'text-slate-400',
+    borderColor: 'border-slate-700/50',
     label: '低',
   },
 };
@@ -55,63 +58,72 @@ export default function SignalCard({ signal, onClick }: SignalCardProps) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={onClick}
-      className={`bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden hover:border-orange-600 transition-all duration-200 cursor-pointer group relative ${
+      className={`glass-card rounded-xl overflow-hidden cursor-pointer group relative transition-all duration-250 ${
         isChatOpen ? 'cursor-grab active:cursor-grabbing' : ''
       }`}
     >
+      {/* top accent line */}
+      <div className={`h-px w-full bg-gradient-to-r ${config.gradientBar} opacity-70 group-hover:opacity-100 transition-opacity`} />
+
       {isChatOpen && (
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <GripVertical className="w-4 h-4 text-neutral-500" />
+        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+          <GripVertical className="w-4 h-4 text-[#8892aa]" />
         </div>
       )}
-      <div className="flex">
-        <div className={`w-1 ${config.color}`} />
-        <div className="flex-1 p-6">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-3">
-              <span
-                className={`px-2 py-1 ${config.bgColor} ${config.textColor} text-xs font-bold rounded border ${config.borderColor}`}
-              >
-                {config.label}
-              </span>
-              <span className="px-2 py-1 bg-neutral-800 text-neutral-300 text-xs font-semibold rounded">
-                {signal.type}
-              </span>
-              <span className="text-neutral-500 text-xs">{signal.timestamp}</span>
-            </div>
-            <button className="text-neutral-500 hover:text-orange-600 transition-colors">
-              <Bookmark className="w-5 h-5" />
-            </button>
+
+      <div className="p-5">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-bold rounded border ${config.badgeBg} ${config.textColor} ${config.borderColor}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${config.dotColor} dot-pulse`} />
+              {config.label}
+            </span>
+            <span className="px-2.5 py-0.5 bg-[rgba(59,130,246,0.08)] border border-[rgba(59,130,246,0.18)] text-blue-500 text-[11px] font-semibold rounded">
+              {signal.type}
+            </span>
+            <span className="text-[#8892aa] text-xs">{signal.timestamp}</span>
           </div>
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="text-[#8892aa] hover:text-blue-400 transition-colors p-1 rounded hover:bg-blue-500/10"
+          >
+            <Bookmark className="w-4 h-4" />
+          </button>
+        </div>
 
-          <h3 className="text-xl font-bold mb-2 group-hover:text-orange-600 transition-colors">
-            {signal.title}
-          </h3>
-          <p className="text-neutral-400 text-sm mb-4 leading-relaxed">{signal.summary}</p>
+        <h3 className="text-base font-semibold mb-1.5 text-[#e0e8ff] group-hover:text-blue-300 transition-colors leading-snug">
+          {signal.title}
+        </h3>
+        <p className="text-[#8892aa] text-sm mb-4 leading-relaxed line-clamp-2">{signal.summary}</p>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4 text-xs text-neutral-500">
-              <span className="flex items-center gap-1">
-                <Building2 className="w-4 h-4" />
-                {signal.relatedEntities.companies} 家公司
-              </span>
-              <span className="flex items-center gap-1">
-                <User className="w-4 h-4" />
-                {signal.relatedEntities.people} 位人物
-              </span>
-              <span className="flex items-center gap-1">
-                <Lightbulb className="w-4 h-4" />
-                {signal.relatedEntities.technologies} 条技术
-              </span>
-            </div>
-            <div className="flex gap-2">
-              <button className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded transition-colors">
-                查看详情
-              </button>
-              <button className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold rounded transition-colors">
-                Chat
-              </button>
-            </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 text-xs text-[#8892aa]">
+            <span className="flex items-center gap-1 hover:text-[#c8d4f0] transition-colors">
+              <Building2 className="w-3.5 h-3.5" />
+              {signal.relatedEntities.companies} 家公司
+            </span>
+            <span className="flex items-center gap-1 hover:text-[#c8d4f0] transition-colors">
+              <User className="w-3.5 h-3.5" />
+              {signal.relatedEntities.people} 位人物
+            </span>
+            <span className="flex items-center gap-1 hover:text-[#c8d4f0] transition-colors">
+              <Lightbulb className="w-3.5 h-3.5" />
+              {signal.relatedEntities.technologies} 条技术
+            </span>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="btn-glow px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold rounded-md transition-all shadow-glow-sm"
+            >
+              查看详情
+            </button>
+            <button
+              onClick={(e) => e.stopPropagation()}
+              className="px-3 py-1.5 bg-[rgba(59,130,246,0.08)] border border-[rgba(59,130,246,0.18)] hover:border-blue-500/40 hover:bg-[rgba(59,130,246,0.15)] text-blue-500 text-[11px] font-semibold rounded-md transition-all"
+            >
+              Chat
+            </button>
           </div>
         </div>
       </div>

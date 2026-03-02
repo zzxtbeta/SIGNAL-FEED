@@ -72,52 +72,56 @@ export default function Layout() {
     : `calc(100% - ${sidebarWidth}px)`;
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div className="min-h-screen" style={{ background: 'var(--th-bg)', transition: 'background 0.25s ease' }}>
+      {/* Animated ambient background */}
+      <div className="bg-ambient" aria-hidden="true">
+        <div className="bg-ambient-dot" />
+      </div>
+      <div className="grid-overlay" aria-hidden="true" />
+
       <Navbar />
-      
-      <div className="flex pt-24 min-h-screen relative">
+
+      <div className="flex pt-16 min-h-screen relative">
         {/* Sidebar */}
-        <div 
-          className="transition-all duration-300 ease-in-out"
-          style={{ width: isSidebarCollapsed ? 0 : 256 }}
+        <div
+          className="transition-all duration-300 ease-in-out flex-shrink-0"
+          style={{ width: isSidebarCollapsed ? 0 : 224 }}
         >
           {!isSidebarCollapsed && <Sidebar />}
         </div>
 
-        {/* Sidebar Toggle Button - 精致小巧的设计 */}
+        {/* Sidebar Toggle Button */}
         <button
           onClick={toggleSidebar}
           className="fixed top-1/2 -translate-y-1/2 z-50 group transition-all duration-300"
-          style={{ 
-            left: isSidebarCollapsed ? '0' : '240px',
-          }}
+          style={{ left: isSidebarCollapsed ? '0' : '210px' }}
         >
           <div className="relative">
-            {/* 背景光晕效果 */}
-            <div className="absolute inset-0 bg-orange-600/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-            
-            {/* 主按钮 - 更小更精致 */}
-            <div className="relative bg-neutral-900 border border-neutral-800 group-hover:border-orange-600 rounded-r-lg py-3 px-1.5 transition-all duration-300 shadow-lg">
+            <div className="absolute inset-0 bg-blue-500/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity rounded-full" />
+            <div
+              className="relative border group-hover:border-blue-500/50 rounded-r-md py-3 px-1.5 transition-all duration-300"
+              style={{ background: 'var(--th-bg-elevated)', borderColor: 'var(--th-border)' }}
+            >
               <div className="flex flex-col items-center gap-0.5">
                 {isSidebarCollapsed ? (
                   <>
-                    <ChevronRight className="w-3 h-3 text-neutral-500 group-hover:text-orange-600 transition-colors" />
-                    <div className="w-0.5 h-4 bg-neutral-700 group-hover:bg-orange-600 rounded-full transition-colors" />
+                    <ChevronRight className="w-3 h-3 text-[#8892aa] group-hover:text-blue-400 transition-colors" />
+                    <div className="w-0.5 h-4 bg-[rgba(59,130,246,0.2)] group-hover:bg-blue-400 rounded-full transition-colors" />
                   </>
                 ) : (
                   <>
-                    <div className="w-0.5 h-4 bg-neutral-700 group-hover:bg-orange-600 rounded-full transition-colors" />
-                    <ChevronLeft className="w-3 h-3 text-neutral-500 group-hover:text-orange-600 transition-colors" />
+                    <div className="w-0.5 h-4 bg-[rgba(59,130,246,0.2)] group-hover:bg-blue-400 rounded-full transition-colors" />
+                    <ChevronLeft className="w-3 h-3 text-[#8892aa] group-hover:text-blue-400 transition-colors" />
                   </>
                 )}
               </div>
             </div>
           </div>
         </button>
-        
+
         {/* Main Content */}
-        <main 
-          className="flex-shrink-0 px-4 pb-8 transition-all duration-300"
+        <main
+          className="flex-shrink-0 px-5 pb-10 pt-6 transition-all duration-300 relative z-10"
           style={{ width: mainWidth }}
         >
           <Outlet />
@@ -130,15 +134,15 @@ export default function Layout() {
             <div
               ref={resizeRef}
               onMouseDown={handleMouseDown}
-              className="w-1 bg-neutral-800 hover:bg-orange-600 cursor-col-resize transition-colors flex-shrink-0 relative group"
+              className="w-px bg-[rgba(59,130,246,0.15)] hover:bg-blue-500/40 cursor-col-resize transition-colors flex-shrink-0 relative group"
             >
-              <div className="absolute inset-y-0 -left-1 -right-1" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-12 bg-neutral-600 group-hover:bg-orange-600 rounded-full transition-colors" />
+              <div className="absolute inset-y-0 -left-2 -right-2" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-16 bg-[rgba(59,130,246,0.25)] group-hover:bg-blue-400/60 rounded-full transition-colors" />
             </div>
 
             {/* Chat Content */}
-            <div 
-              className="flex-shrink-0 h-[calc(100vh-6rem)] sticky top-24"
+            <div
+              className="flex-shrink-0 h-[calc(100vh-4rem)] sticky top-16 relative z-10"
               style={{ width: chatWidth }}
               onDrop={handleDrop}
               onDragOver={handleDragOver}

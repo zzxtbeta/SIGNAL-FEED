@@ -29,17 +29,17 @@ export default function ResearchTagCloud({
           onClick={() => clickable && onTagClick?.(tag)}
           className={`
             ${sizeClasses[size]}
-            bg-neutral-800 text-neutral-300
-            border border-neutral-700
+            bg-[rgba(59,130,246,0.06)] text-slate-300
+            border border-[rgba(59,130,246,0.12)]
             rounded
-            ${clickable ? 'cursor-pointer hover:bg-orange-600/20 hover:border-orange-600/50 hover:text-orange-400 transition-colors' : ''}
+            ${clickable ? 'cursor-pointer hover:bg-blue-500/15 hover:border-blue-400/40 hover:text-blue-300 transition-colors' : ''}
           `}
         >
           {tag}
         </span>
       ))}
       {remainingCount > 0 && (
-        <span className={`${sizeClasses[size]} bg-neutral-800/50 text-neutral-500 rounded`}>
+        <span className={`${sizeClasses[size]} bg-[rgba(59,130,246,0.04)] text-slate-500 rounded`}>
           +{remainingCount}
         </span>
       )}

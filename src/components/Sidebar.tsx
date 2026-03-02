@@ -12,25 +12,51 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="fixed left-4 w-56 bg-neutral-900 border border-neutral-800 rounded-lg p-4 h-[calc(100vh-7rem)]">
-      <nav className="space-y-1">
+    <aside
+      className="fixed left-0 w-56 border-r backdrop-blur-xl p-4 h-[calc(100vh-4rem)] top-16 overflow-y-auto transition-colors duration-300"
+      style={{ background: 'var(--th-bg-sidebar)', borderColor: 'var(--th-border)' }}
+    >
+      <nav className="space-y-0.5 mt-2">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded font-medium text-sm cursor-pointer transition-colors ${
+              `relative flex items-center gap-3 px-4 py-2.5 rounded-md font-medium text-sm cursor-pointer transition-all duration-200 group ${
                 isActive
-                  ? 'bg-neutral-800 text-orange-600 font-semibold'
-                  : 'text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200'
+                  ? 'nav-link-active-bar bg-[rgba(59,130,246,0.1)] text-blue-400'
+                  : 'text-[#8892aa] hover:bg-[rgba(59,130,246,0.06)] hover:text-[#c8d4f0]'
               }`
             }
           >
-            <Icon className="w-5 h-5" />
-            {label}
+            {({ isActive }) => (
+              <>
+                <Icon className={`w-4 h-4 transition-colors ${
+                  isActive ? 'text-blue-400' : 'text-[#8892aa] group-hover:text-[#c8d4f0]'
+                }`} />
+                <span>{label}</span>
+                {isActive && (
+                  <div className="absolute inset-0 rounded-md bg-gradient-to-r from-blue-500/10 to-transparent pointer-events-none" />
+                )}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
+
+      {/* Bottom status */}
+      <div className="absolute bottom-6 left-4 right-4">
+        <div
+          className="border rounded-md p-3 transition-colors duration-300"
+          style={{ borderColor: 'var(--th-border)', background: 'var(--th-bg-elevated)' }}
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 dot-pulse" />
+            <span className="text-xs text-blue-400 font-medium">量子科技赛道</span>
+          </div>
+          <p className="text-[10px] text-[#8892aa] leading-relaxed">实时追踪 · AI 增强分析</p>
+        </div>
+      </div>
     </aside>
   );
 }

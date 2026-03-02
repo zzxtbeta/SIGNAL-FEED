@@ -102,55 +102,61 @@ export default function SignalFeed() {
   return (
     <div>
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="font-display text-5xl text-orange-600 mb-2">SIGNAL FEED</h1>
-        <p className="text-neutral-400 text-sm">
+      <div className="mb-6 animate-fade-up">
+        <div className="flex items-center gap-3 mb-1">
+          <h1 className="font-display text-4xl text-shimmer tracking-widest">SIGNAL FEED</h1>
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[rgba(59,130,246,0.1)] border border-[rgba(59,130,246,0.2)]">
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 dot-pulse" />
+            <span className="text-[11px] text-blue-400 font-medium">实时</span>
+          </div>
+        </div>
+        <p className="text-[#8892aa] text-sm">
           {searchQuery ? (
-            <>搜索 "{searchQuery}" · 找到 {filteredSignals.length} 条信号</>
+            <>搜索 &ldquo;{searchQuery}&rdquo; · 找到 <span className="text-blue-400 font-medium">{filteredSignals.length}</span> 条信号</>
           ) : (
-            <>实时追踪量子科技领域的关键信号 · 共 {totalCount} 条信号</>
+            <>实时追踪量子科技领域的关键信号 · 共 <span className="text-blue-400 font-medium">{totalCount}</span> 条信号</>
           )}
         </p>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-4 mb-6 sticky top-24 z-40 backdrop-blur-xl bg-neutral-900/80">
+      <div className="glass-card rounded-xl p-4 mb-6 sticky top-16 z-40">
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-1.5 flex-wrap">
             {signalTypes.map((type) => (
               <button
                 key={type}
                 onClick={() => handleTypeChange(type)}
-                className={`px-4 py-2 rounded font-medium text-sm cursor-pointer transition-all duration-200 ${
+                className={`btn-glow px-3.5 py-1.5 rounded-md font-medium text-sm cursor-pointer transition-all duration-200 ${
                   filters.type === type
-                    ? 'bg-orange-600 text-white font-semibold shadow-lg shadow-orange-600/20'
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white'
+                    ? 'bg-blue-600 text-white shadow-glow-sm border border-blue-500'
+                    : 'bg-[rgba(59,130,246,0.06)] border border-[rgba(59,130,246,0.15)] text-[#8892aa] hover:bg-[rgba(59,130,246,0.12)] hover:text-[#c8d4f0] hover:border-blue-500/30'
                 }`}
               >
                 {type}
                 {type !== '全部' && typeCounts[type] !== undefined && (
-                  <span className="ml-2 text-xs opacity-70">
-                    ({typeCounts[type]})
+                  <span className="ml-1.5 text-[11px] opacity-60">
+                    {typeCounts[type]}
                   </span>
                 )}
               </button>
             ))}
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <select
               value={filters.timeRange || 'all'}
               onChange={(e) => updateFilters({ timeRange: e.target.value as any })}
-              className="bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
+              className="bg-[rgba(10,10,24,0.8)] border border-[rgba(59,130,246,0.15)] rounded-md px-3 py-1.5 text-sm text-[#c8d4f0] cursor-pointer hover:border-blue-500/40 transition-colors focus:outline-none focus:border-blue-500/50 appearance-none"
             >
-              <option value="all">全部时间</option>
-              <option value="7">最近 7 天</option>
-              <option value="30">最近 30 天</option>
-              <option value="90">最近 90 天</option>
+              <option value="all" className="bg-[#0a0a18]">全部时间</option>
+              <option value="7" className="bg-[#0a0a18]">最近 7 天</option>
+              <option value="30" className="bg-[#0a0a18]">最近 30 天</option>
+              <option value="90" className="bg-[#0a0a18]">最近 90 天</option>
             </select>
             <select
               value={filters.priority || 'all'}
               onChange={(e) => updateFilters({ priority: e.target.value as any })}
-              className="bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
+              className="bg-[rgba(10,10,24,0.8)] border border-[rgba(59,130,246,0.15)] rounded-md px-3 py-1.5 text-sm text-[#c8d4f0] cursor-pointer hover:border-blue-500/40 transition-colors focus:outline-none focus:border-blue-500/50 appearance-none"
             >
               <option value="all">优先级：全部</option>
               <option value="high">高优先级</option>
@@ -163,9 +169,9 @@ export default function SignalFeed() {
 
       {/* Signal Feed */}
       {loading ? (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-12 text-center">
-          <div className="inline-block w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-neutral-400 mt-4">加载中...</p>
+        <div className="glass-card rounded-xl p-12 text-center">
+          <div className="inline-block w-8 h-8 border-2 border-blue-500/30 border-t-blue-400 rounded-full animate-spin"></div>
+          <p className="text-[#8892aa] mt-4 text-sm">加载中...</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -190,7 +196,7 @@ export default function SignalFeed() {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed rounded text-sm font-medium transition-colors"
+                    className="px-4 py-2 bg-[rgba(59,130,246,0.08)] border border-[rgba(59,130,246,0.15)] hover:bg-[rgba(59,130,246,0.15)] disabled:opacity-30 disabled:cursor-not-allowed rounded-md text-sm font-medium text-[#c8d4f0] transition-all"
                   >
                     上一页
                   </button>
@@ -212,10 +218,10 @@ export default function SignalFeed() {
                         <button
                           key={pageNum}
                           onClick={() => handlePageChange(pageNum)}
-                          className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                          className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                             currentPage === pageNum
-                              ? 'bg-orange-600 text-white'
-                              : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                              ? 'bg-blue-600 text-white shadow-glow-sm border border-blue-500'
+                              : 'bg-[rgba(59,130,246,0.06)] border border-[rgba(59,130,246,0.12)] hover:bg-[rgba(59,130,246,0.14)] text-[#8892aa] hover:text-[#c8d4f0]'
                           }`}
                         >
                           {pageNum}
@@ -227,7 +233,7 @@ export default function SignalFeed() {
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed rounded text-sm font-medium transition-colors"
+                    className="px-4 py-2 bg-[rgba(59,130,246,0.08)] border border-[rgba(59,130,246,0.15)] hover:bg-[rgba(59,130,246,0.15)] disabled:opacity-30 disabled:cursor-not-allowed rounded-md text-sm font-medium text-[#c8d4f0] transition-all"
                   >
                     下一页
                   </button>
@@ -235,18 +241,18 @@ export default function SignalFeed() {
               )}
 
               <div className="text-center py-4">
-                <p className="text-neutral-500 text-sm">
-                  第 {currentPage} / {totalPages} 页 · 共 {totalCount} 条信号
+                <p className="text-[#8892aa] text-xs">
+                  第 <span className="text-blue-400">{currentPage}</span> / {totalPages} 页 · 共 <span className="text-blue-400">{totalCount}</span> 条信号
                 </p>
               </div>
             </>
           ) : (
-            <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-12 text-center">
-              <div className="text-6xl mb-4">🔍</div>
-              <p className="text-neutral-400 text-lg mb-2">
+            <div className="glass-card rounded-xl p-12 text-center">
+              <div className="text-5xl mb-4 opacity-40">🔍</div>
+              <p className="text-[#c8d4f0] text-base mb-2 font-medium">
                 {searchQuery ? `没有找到包含 "${searchQuery}" 的信号` : '暂无符合条件的信号'}
               </p>
-              <p className="text-neutral-500 text-sm">
+              <p className="text-[#8892aa] text-sm">
                 {searchQuery ? '尝试使用其他关键词搜索' : '尝试调整筛选条件或时间范围'}
               </p>
             </div>
@@ -264,10 +270,10 @@ export default function SignalFeed() {
 
       {/* Loading Detail Modal */}
       {loadingDetail && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-12 text-center">
-            <div className="inline-block w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-neutral-400 mt-4">加载详情中...</p>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+          <div className="glass-card rounded-xl p-10 text-center">
+            <div className="inline-block w-8 h-8 border-2 border-blue-500/30 border-t-blue-400 rounded-full animate-spin"></div>
+            <p className="text-[#8892aa] mt-4 text-sm">加载详情中...</p>
           </div>
         </div>
       )}

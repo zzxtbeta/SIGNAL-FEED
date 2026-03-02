@@ -31,28 +31,28 @@ export default function Candidates() {
   return (
     <div>
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="font-display text-5xl text-orange-600 mb-2">CANDIDATES</h1>
-        <p className="text-neutral-400 text-sm">
-          AI推荐的潜在投资标的 · 共 {candidates.length} 家公司
+      <div className="mb-6 animate-fade-up">
+        <h1 className="font-display text-4xl text-shimmer tracking-widest mb-1">CANDIDATES</h1>
+        <p className="text-[#8892aa] text-sm">
+          AI推荐的潜在投资标的 · 共 <span className="text-blue-400 font-medium">{candidates.length}</span> 家公司
         </p>
       </div>
 
       {/* Filters */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-4 mb-6">
+      <div className="glass-card rounded-xl p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Location Filter */}
           <div>
-            <label className="text-xs text-neutral-500 mb-2 block">地区筛选</label>
-            <div className="flex flex-wrap gap-2">
+            <label className="text-[10px] text-[#8892aa] mb-2 block uppercase tracking-widest">地区筛选</label>
+            <div className="flex flex-wrap gap-1.5">
               {locations.map((location) => (
                 <button
                   key={location}
                   onClick={() => handleLocationChange(location)}
-                  className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
+                  className={`btn-glow px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
                     selectedLocation === location
-                      ? 'bg-orange-600 text-white'
-                      : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                      ? 'bg-blue-600 text-white shadow-glow-sm border border-blue-500'
+                      : 'bg-[rgba(59,130,246,0.06)] border border-[rgba(59,130,246,0.15)] text-[#8892aa] hover:text-[#c8d4f0] hover:border-blue-500/30'
                   }`}
                 >
                   {location === 'all' ? '全部' : location}
@@ -63,14 +63,14 @@ export default function Candidates() {
 
           {/* Tech Route Filter */}
           <div>
-            <label className="text-xs text-neutral-500 mb-2 block">技术路线</label>
+            <label className="text-[10px] text-[#8892aa] mb-2 block uppercase tracking-widest">技术路线</label>
             <select
               value={selectedTechRoute}
               onChange={(e) => handleTechRouteChange(e.target.value)}
-              className="w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
+              className="w-full bg-[rgba(10,10,24,0.8)] border border-[rgba(59,130,246,0.15)] rounded-md px-3 py-2 text-sm text-[#c8d4f0] cursor-pointer hover:border-blue-500/40 transition-colors focus:outline-none focus:border-blue-500/50 appearance-none"
             >
               {techRoutes.map((route) => (
-                <option key={route} value={route}>
+                <option key={route} value={route} className="bg-[#0a0a18]">
                   {route === 'all' ? '全部路线' : route}
                 </option>
               ))}
@@ -79,11 +79,11 @@ export default function Candidates() {
 
           {/* Sort */}
           <div>
-            <label className="text-xs text-neutral-500 mb-2 block">排序方式</label>
+            <label className="text-[10px] text-[#8892aa] mb-2 block uppercase tracking-widest">排序方式</label>
             <select
               value={sortBy}
               onChange={(e) => handleSortChange(e.target.value as 'signalCount' | 'recent')}
-              className="w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
+              className="w-full bg-[rgba(10,10,24,0.8)] border border-[rgba(59,130,246,0.15)] rounded-md px-3 py-2 text-sm text-[#c8d4f0] cursor-pointer hover:border-blue-500/40 transition-colors focus:outline-none focus:border-blue-500/50 appearance-none"
             >
               <option value="signalCount">信号数量（多→少）</option>
               <option value="recent">最近更新</option>
@@ -94,9 +94,9 @@ export default function Candidates() {
 
       {/* Candidates List */}
       {loading ? (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-12 text-center">
-          <div className="inline-block w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-neutral-400 mt-4">加载中...</p>
+        <div className="glass-card rounded-xl p-12 text-center">
+          <div className="inline-block w-8 h-8 border-2 border-blue-500/30 border-t-blue-400 rounded-full animate-spin"></div>
+          <p className="text-[#8892aa] mt-4 text-sm">加载中...</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -122,27 +122,27 @@ export default function Candidates() {
                   draggable={isChatOpen}
                   onDragStart={handleDragStart}
                   onDragEnd={handleDragEnd}
-                  className={`bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-orange-600 transition-all duration-200 cursor-pointer group animate-in fade-in slide-in-from-bottom-4 relative ${
+                  className={`glass-card rounded-xl p-5 cursor-pointer group animate-fade-up relative ${
                     isChatOpen ? 'cursor-grab active:cursor-grabbing' : ''
                   }`}
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {isChatOpen && (
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <GripVertical className="w-4 h-4 text-neutral-500" />
+                      <GripVertical className="w-4 h-4 text-[#8892aa]" />
                     </div>
                   )}
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-600 rounded flex items-center justify-center flex-shrink-0">
-                      <Building2 className="w-6 h-6 text-white" />
+                    <div className="w-11 h-11 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Building2 className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg group-hover:text-orange-600 transition-colors">
+                      <h3 className="font-semibold text-base group-hover:text-blue-300 transition-colors text-[#e0e8ff]">
                         {candidate.name}
                       </h3>
-                      <div className="flex items-center gap-2 text-xs text-neutral-400 mt-1">
+                      <div className="flex items-center gap-2 text-xs text-[#8892aa] mt-0.5">
                         <MapPin className="w-3 h-3" />
                         {candidate.location}
                         {candidate.fundingRound && (
@@ -154,18 +154,18 @@ export default function Candidates() {
                       </div>
                     </div>
                   </div>
-                  <button className="text-neutral-500 hover:text-orange-600 transition-colors">
-                    <Star className="w-5 h-5" />
+                  <button className="text-[#8892aa] hover:text-blue-400 transition-colors p-1 rounded hover:bg-blue-500/10">
+                    <Star className="w-4 h-4" />
                   </button>
                 </div>
 
                 {/* Tech Route */}
-                <div className="mb-4">
-                  <span className="px-2 py-1 bg-orange-600/20 text-orange-500 text-xs font-semibold rounded border border-orange-600/30">
+                <div className="mb-3">
+                  <span className="px-2.5 py-0.5 bg-[rgba(59,130,246,0.1)] text-blue-300 text-xs font-semibold rounded border border-[rgba(59,130,246,0.2)]">
                     {candidate.techRoute}
                   </span>
                   {candidate.stage && (
-                    <span className="ml-2 px-2 py-1 bg-neutral-800 text-neutral-400 text-xs font-medium rounded">
+                    <span className="ml-2 px-2.5 py-0.5 bg-[rgba(100,116,139,0.15)] text-[#8892aa] text-xs font-medium rounded border border-[rgba(100,116,139,0.2)]">
                       {candidate.stage}
                     </span>
                   )}
@@ -173,21 +173,21 @@ export default function Candidates() {
 
                 {/* Description */}
                 {candidate.description && (
-                  <p className="text-sm text-neutral-400 mb-4 line-clamp-2">
+                  <p className="text-sm text-[#8892aa] mb-3 line-clamp-2 leading-relaxed">
                     {candidate.description}
                   </p>
                 )}
 
                 {/* Reasons */}
                 <div className="mb-4">
-                  <div className="text-xs text-neutral-500 mb-2 flex items-center gap-1">
+                  <div className="text-[10px] text-[#8892aa] mb-1.5 flex items-center gap-1 uppercase tracking-widest">
                     <TrendingUp className="w-3 h-3" />
                     推荐原因
                   </div>
                   <div className="space-y-1">
                     {candidate.reasons.map((reason, idx) => (
-                      <div key={idx} className="text-xs text-neutral-400 flex items-start gap-2">
-                        <span className="text-orange-600 mt-0.5">•</span>
+                      <div key={idx} className="text-xs text-[#8892aa] flex items-start gap-2">
+                        <span className="text-blue-400 mt-0.5">•</span>
                         <span>{reason}</span>
                       </div>
                     ))}
@@ -195,15 +195,15 @@ export default function Candidates() {
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-neutral-800">
-                  <div className="text-xs text-neutral-500">
+                <div className="flex items-center justify-between pt-3 border-t border-[rgba(59,130,246,0.1)]">
+                  <div className="text-[11px] text-[#8892aa]">
                     {candidate.signalCount} 条相关信号
                   </div>
                   <div className="flex gap-2">
-                    <button className="px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded transition-colors">
+                    <button className="btn-glow px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold rounded-md transition-all shadow-glow-sm">
                       查看详情
                     </button>
-                    <button className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold rounded transition-colors">
+                    <button className="px-3 py-1.5 bg-[rgba(59,130,246,0.08)] border border-[rgba(59,130,246,0.18)] hover:border-blue-500/40 text-blue-500 text-[11px] font-semibold rounded-md transition-all">
                       加入关注
                     </button>
                   </div>
@@ -212,10 +212,10 @@ export default function Candidates() {
               );
             })
           ) : (
-            <div className="col-span-2 bg-neutral-900 border border-neutral-800 rounded-lg p-12 text-center">
-              <div className="text-6xl mb-4">🎯</div>
-              <p className="text-neutral-400 text-lg mb-2">暂无符合条件的候选标的</p>
-              <p className="text-neutral-500 text-sm">尝试调整筛选条件</p>
+            <div className="col-span-2 glass-card rounded-xl p-12 text-center">
+              <div className="text-5xl mb-4 opacity-40">🎯</div>
+              <p className="text-[#c8d4f0] text-base mb-2 font-medium">暂无符合条件的候选标的</p>
+              <p className="text-[#8892aa] text-sm">尝试调整筛选条件</p>
             </div>
           )}
         </div>

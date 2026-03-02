@@ -33,32 +33,27 @@ export default function ResearcherCard({ researcher, onClick }: ResearcherCardPr
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={onClick}
-      className={`
-        bg-neutral-900 border border-neutral-800 rounded-lg p-5
-        hover:border-orange-600 transition-all duration-200
-        cursor-pointer group relative
-        ${isChatOpen ? 'cursor-grab active:cursor-grabbing' : ''}
-      `}
+      className={`glass-card rounded-xl p-4 cursor-pointer group relative transition-all duration-200 flex flex-col h-full ${isChatOpen ? 'cursor-grab active:cursor-grabbing' : ''}`}
     >
       {/* Drag Handle */}
       {isChatOpen && (
         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-          <GripVertical className="w-4 h-4 text-neutral-500" />
+          <GripVertical className="w-4 h-4 text-[#8892aa]" />
         </div>
       )}
 
       {/* Header: Institution Badge */}
       <div className="flex items-center justify-between mb-3">
         <InstitutionBadge institution={researcher.institution} size="sm" />
-        <ChevronRight className="w-4 h-4 text-neutral-600 group-hover:text-orange-600 transition-colors" />
+        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-blue-400 transition-colors" />
       </div>
 
       {/* Name & Title */}
-      <div className="mb-3">
-        <h3 className="text-lg font-bold text-white group-hover:text-orange-600 transition-colors mb-1">
+      <div className="mb-2">
+        <h3 className="text-sm font-semibold text-[#e0e8ff] group-hover:text-blue-300 transition-colors mb-1 leading-snug">
           {researcher.name}
           {researcher.nameEn && (
-            <span className="ml-2 text-sm font-normal text-neutral-500">
+            <span className="ml-2 text-xs font-normal text-[#8892aa]">
               {researcher.nameEn}
             </span>
           )}
@@ -68,36 +63,34 @@ export default function ResearcherCard({ researcher, onClick }: ResearcherCardPr
 
       {/* Department */}
       {researcher.department && (
-        <div className="flex items-center gap-1.5 text-sm text-neutral-400 mb-3">
-          <Building2 className="w-3.5 h-3.5" />
-          <span>{researcher.department}</span>
+        <div className="flex items-center gap-1.5 text-xs text-[#8892aa] mb-2">
+          <Building2 className="w-3 h-3" />
+          <span className="truncate">{researcher.department}</span>
         </div>
       )}
 
       {/* Research Tags */}
       {researcher.researchTags.length > 0 && (
-        <div className="mb-4">
+        <div className="mb-3">
           <ResearchTagCloud tags={researcher.researchTags} maxTags={4} />
         </div>
       )}
 
+      {/* Spacer to push footer down */}
+      <div className="flex-1" />
+
       {/* Footer: Contact Info Indicators */}
-      <div className="flex items-center gap-4 pt-3 border-t border-neutral-800">
-        {/* Email indicator */}
-        <div className={`flex items-center gap-1.5 text-xs ${researcher.email ? 'text-green-500' : 'text-neutral-600'}`}>
-          <Mail className="w-3.5 h-3.5" />
+      <div className="flex items-center gap-3 pt-2.5 border-t border-[rgba(59,130,246,0.1)]">
+        <div className={`flex items-center gap-1 text-[11px] ${researcher.email ? 'text-green-400/80' : 'text-[rgba(59,130,246,0.2)]'}`}>
+          <Mail className="w-3 h-3" />
           <span>{researcher.email ? '有邮箱' : '无邮箱'}</span>
         </div>
-
-        {/* Homepage indicator */}
-        <div className={`flex items-center gap-1.5 text-xs ${researcher.url ? 'text-blue-500' : 'text-neutral-600'}`}>
-          <Link2 className="w-3.5 h-3.5" />
+        <div className={`flex items-center gap-1 text-[11px] ${researcher.url ? 'text-blue-400/80' : 'text-[rgba(59,130,246,0.2)]'}`}>
+          <Link2 className="w-3 h-3" />
           <span>{researcher.url ? '有主页' : '无主页'}</span>
         </div>
-
-        {/* Biography indicator */}
-        <div className={`flex items-center gap-1.5 text-xs ${researcher.biography?.length > 50 ? 'text-amber-500' : 'text-neutral-600'}`}>
-          <span className="w-3.5 h-3.5 flex items-center justify-center text-[10px]">📄</span>
+        <div className={`flex items-center gap-1 text-[11px] ${researcher.biography?.length > 50 ? 'text-amber-400/80' : 'text-[rgba(59,130,246,0.2)]'}`}>
+          <span className="w-3 h-3 flex items-center justify-center text-[10px]">📄</span>
           <span>{researcher.biography?.length > 50 ? '有简介' : '简介短'}</span>
         </div>
       </div>

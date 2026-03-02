@@ -26,10 +26,10 @@ const priorityConfig = {
     label: '中',
   },
   low: {
-    color: 'bg-neutral-600',
-    bgColor: 'bg-neutral-700/50',
-    textColor: 'text-neutral-400',
-    borderColor: 'border-neutral-700',
+    color: 'bg-slate-600',
+    bgColor: 'bg-slate-700/50',
+    textColor: 'text-slate-400',
+    borderColor: 'border-slate-700',
     label: '低',
   },
 };
@@ -107,25 +107,25 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-neutral-900 border border-neutral-800 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <div className="glass-card rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-neutral-900 border-b border-neutral-800 p-6 flex items-start justify-between">
+        <div className="sticky top-0 bg-[rgba(5,5,14,0.95)] backdrop-blur-lg border-b border-[rgba(59,130,246,0.12)] p-6 flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-3">
               <span className={`px-2 py-1 ${config.bgColor} ${config.textColor} text-xs font-bold rounded border ${config.borderColor}`}>
                 {config.label}
               </span>
-              <span className="px-2 py-1 bg-neutral-800 text-neutral-300 text-xs font-semibold rounded">
+              <span className="px-2 py-1 bg-[rgba(59,130,246,0.05)] text-slate-300 text-xs font-semibold rounded border border-[rgba(59,130,246,0.1)]">
                 {signal.type}
               </span>
-              <span className="text-neutral-500 text-xs">{signal.timestamp}</span>
-              <span className="text-neutral-500 text-xs">来源：{signal.source}</span>
+              <span className="text-slate-500 text-xs">{signal.timestamp}</span>
+              <span className="text-slate-500 text-xs">来源：{signal.source}</span>
             </div>
             <h2 className="text-2xl font-bold">{signal.title}</h2>
           </div>
           <button
             onClick={onClose}
-            className="ml-4 p-2 hover:bg-neutral-800 rounded transition-colors"
+            className="ml-4 p-2 hover:bg-[rgba(59,130,246,0.1)] rounded transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -134,12 +134,12 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
         {/* Content */}
         <div className="p-6 space-y-6">
           {/* Why Important - US02 */}
-          <div className="bg-gradient-to-r from-orange-600/10 to-red-600/10 border border-orange-600/30 rounded-lg p-4">
-            <h3 className="font-semibold text-orange-600 mb-2 flex items-center gap-2">
+          <div className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-lg p-4">
+            <h3 className="font-semibold text-blue-400 mb-2 flex items-center gap-2">
               <span className="text-lg">⚡</span>
               为什么重要？
             </h3>
-            <ul className="space-y-1 text-sm text-neutral-300">
+            <ul className="space-y-1 text-sm text-slate-300">
               {signal.whyImportant && signal.whyImportant.length > 0 ? (
                 signal.whyImportant.map((reason, idx) => (
                   <li key={idx}>• {reason}</li>
@@ -172,7 +172,7 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
           {/* Summary */}
           <div>
             <h3 className="font-semibold text-lg mb-3">信号摘要</h3>
-            <p className="text-neutral-400 leading-relaxed">{signal.summary}</p>
+            <p className="text-slate-400 leading-relaxed">{signal.summary}</p>
           </div>
 
           {/* Structured Info */}
@@ -183,17 +183,17 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
               <div className="space-y-4">
                 {/* 作者和机构 */}
                 {signal.metadata.authors && signal.metadata.authors.length > 0 && (
-                  <div className="bg-neutral-800 rounded-lg p-4">
+                  <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-4 border border-[rgba(59,130,246,0.08)]">
                     <div className="flex items-center gap-2 mb-3">
-                      <User className="w-4 h-4 text-orange-600" />
-                      <span className="text-sm font-semibold text-orange-600">作者</span>
+                      <User className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm font-semibold text-blue-400">作者</span>
                     </div>
                     <div className="space-y-2">
                       {signal.metadata.authors.map((author: any, idx: number) => (
                         <div key={idx} className="flex items-start gap-3 text-sm">
-                          <span className="text-neutral-400 min-w-[60px]">{author.name}</span>
+                          <span className="text-slate-400 min-w-[60px]">{author.name}</span>
                           {author.affiliation && (
-                            <span className="text-neutral-300">{author.affiliation}</span>
+                            <span className="text-slate-300">{author.affiliation}</span>
                           )}
                         </div>
                       ))}
@@ -210,16 +210,16 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                     </div>
                     {signal.metadata.research_problem.summary && (
                       <div className="mb-2">
-                        <span className="text-xs text-neutral-500 block mb-1">核心问题：</span>
-                        <p className="text-sm text-neutral-200 leading-relaxed">
+                        <span className="text-xs text-slate-500 block mb-1">核心问题：</span>
+                        <p className="text-sm text-slate-200 leading-relaxed">
                           {signal.metadata.research_problem.summary}
                         </p>
                       </div>
                     )}
                     {signal.metadata.research_problem.detail && (
                       <div>
-                        <span className="text-xs text-neutral-500 block mb-1">详细描述：</span>
-                        <p className="text-xs text-neutral-300 leading-relaxed">
+                        <span className="text-xs text-slate-500 block mb-1">详细描述：</span>
+                        <p className="text-xs text-slate-300 leading-relaxed">
                           {signal.metadata.research_problem.detail}
                         </p>
                       </div>
@@ -236,16 +236,16 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                     </div>
                     {signal.metadata.tech_route.summary && (
                       <div className="mb-2">
-                        <span className="text-xs text-neutral-500 block mb-1">方法概述：</span>
-                        <p className="text-sm text-neutral-200 leading-relaxed">
+                        <span className="text-xs text-slate-500 block mb-1">方法概述：</span>
+                        <p className="text-sm text-slate-200 leading-relaxed">
                           {signal.metadata.tech_route.summary}
                         </p>
                       </div>
                     )}
                     {signal.metadata.tech_route.detail && (
                       <div>
-                        <span className="text-xs text-neutral-500 block mb-1">技术细节：</span>
-                        <p className="text-xs text-neutral-300 leading-relaxed">
+                        <span className="text-xs text-slate-500 block mb-1">技术细节：</span>
+                        <p className="text-xs text-slate-300 leading-relaxed">
                           {signal.metadata.tech_route.detail}
                         </p>
                       </div>
@@ -265,13 +265,13 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                         <div key={idx} className="border-l-2 border-green-600/50 pl-3">
                           {contrib.summary && (
                             <div className="mb-1">
-                              <span className="text-sm text-neutral-200 font-medium">
+                              <span className="text-sm text-slate-200 font-medium">
                                 {contrib.summary}
                               </span>
                             </div>
                           )}
                           {contrib.detail && (
-                            <p className="text-xs text-neutral-400 leading-relaxed">
+                            <p className="text-xs text-slate-400 leading-relaxed">
                               {contrib.detail}
                             </p>
                           )}
@@ -283,19 +283,19 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
 
                 {/* 关键指标 */}
                 {signal.metadata.metrics && signal.metadata.metrics.length > 0 && (
-                  <div className="bg-neutral-800 rounded-lg p-4">
+                  <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-4 border border-[rgba(59,130,246,0.08)]">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-lg">📊</span>
-                      <span className="text-sm font-semibold text-orange-600">关键指标</span>
+                      <span className="text-sm font-semibold text-blue-400">关键指标</span>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       {signal.metadata.metrics.map((metric: any, idx: number) => (
-                        <div key={idx} className="bg-neutral-900 rounded p-3">
+                        <div key={idx} className="bg-[rgba(5,5,14,0.5)] rounded p-3">
                           {metric.name && (
-                            <div className="text-xs text-neutral-500 mb-1">{metric.name}</div>
+                            <div className="text-xs text-slate-500 mb-1">{metric.name}</div>
                           )}
                           {metric.value && (
-                            <div className="text-sm text-orange-500 font-semibold">{metric.value}</div>
+                            <div className="text-sm text-blue-300 font-semibold">{metric.value}</div>
                           )}
                         </div>
                       ))}
@@ -305,16 +305,16 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
 
                 {/* 影响力分数 */}
                 {signal.metadata.influence_score !== undefined && signal.metadata.influence_score !== null && (
-                  <div className="bg-neutral-800 rounded-lg p-4">
+                  <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-4 border border-[rgba(59,130,246,0.08)]">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-semibold text-orange-600">影响力分数</span>
-                      <span className="text-2xl font-bold text-orange-500">
+                      <span className="text-sm font-semibold text-blue-400">影响力分数</span>
+                      <span className="text-2xl font-bold text-blue-300">
                         {signal.metadata.influence_score}
                       </span>
                     </div>
-                    <div className="w-full h-2 bg-neutral-700 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-gradient-to-r from-orange-600 to-red-600 transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 transition-all duration-500"
                         style={{ width: `${Math.min(signal.metadata.influence_score, 100)}%` }}
                       />
                     </div>
@@ -323,95 +323,93 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
 
                 {/* 摘要 */}
                 {signal.metadata.abstract && (
-                  <div className="bg-neutral-800 rounded-lg p-4">
+                  <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-4 border border-[rgba(59,130,246,0.08)]">
                     <div className="flex items-center gap-2 mb-3">
-                      <FileText className="w-4 h-4 text-orange-600" />
-                      <span className="text-sm font-semibold text-orange-600">论文摘要</span>
+                      <FileText className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm font-semibold text-blue-400">论文摘要</span>
                     </div>
-                    <p className="text-xs text-neutral-300 leading-relaxed">
+                    <p className="text-xs text-slate-300 leading-relaxed">
                       {signal.metadata.abstract}
                     </p>
                   </div>
                 )}
 
                 {/* 发表信息 */}
-                <div className="bg-neutral-800 rounded-lg p-4">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-4 border border-[rgba(59,130,246,0.08)]">
                     {signal.metadata.publish_date && (
                       <div>
-                        <span className="text-neutral-500 block mb-1">发表日期</span>
-                        <span className="text-neutral-200">{signal.metadata.publish_date}</span>
+                        <span className="text-slate-500 block mb-1">发表日期</span>
+                        <span className="text-slate-200">{signal.metadata.publish_date}</span>
                       </div>
                     )}
                     {signal.metadata.paper_id && (
                       <div>
-                        <span className="text-neutral-500 block mb-1">论文ID</span>
-                        <span className="text-neutral-200 font-mono text-xs">{signal.metadata.paper_id}</span>
+                        <span className="text-slate-500 block mb-1">论文ID</span>
+                        <span className="text-slate-200 font-mono text-xs">{signal.metadata.paper_id}</span>
                       </div>
                     )}
                     {signal.metadata.domain_ids && signal.metadata.domain_ids.length > 0 && (
                       <div className="col-span-2">
-                        <span className="text-neutral-500 block mb-2">研究领域</span>
+                        <span className="text-slate-500 block mb-2">研究领域</span>
                         <div className="flex flex-wrap gap-2">
                           {signal.metadata.domain_ids.map((domainId: number, idx: number) => (
-                            <span key={idx} className="px-2 py-1 bg-neutral-700 text-neutral-300 text-xs rounded">
+                            <span key={idx} className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded">
                               领域 {domainId}
                             </span>
                           ))}
                         </div>
                       </div>
                     )}
-                  </div>
                 </div>
               </div>
             ) : (
               // 非论文类型的原有显示逻辑
-              <div className="bg-neutral-800 rounded-lg p-4 space-y-2 text-sm">
+              <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-4 border border-[rgba(59,130,246,0.08)] space-y-2 text-sm">
                 {signal.type === '融资事件' && (
                 <>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">公司：</span>
-                    <span className="text-neutral-200">本源量子（合肥）</span>
+                    <span className="text-slate-500 w-24">公司：</span>
+                    <span className="text-slate-200">本源量子（合肥）</span>
                   </div>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">技术路线：</span>
-                    <span className="text-neutral-200">超导量子计算</span>
+                    <span className="text-slate-500 w-24">技术路线：</span>
+                    <span className="text-slate-200">超导量子计算</span>
                   </div>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">融资轮次：</span>
-                    <span className="text-neutral-200">C轮</span>
+                    <span className="text-slate-500 w-24">融资轮次：</span>
+                    <span className="text-slate-200">C轮</span>
                   </div>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">金额：</span>
-                    <span className="text-neutral-200">数亿元人民币</span>
+                    <span className="text-slate-500 w-24">金额：</span>
+                    <span className="text-slate-200">数亿元人民币</span>
                   </div>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">投资方：</span>
-                    <span className="text-neutral-200">深创投（领投）、建信股权、中金资本</span>
+                    <span className="text-slate-500 w-24">投资方：</span>
+                    <span className="text-slate-200">深创投（领投）、建信股权、中金资本</span>
                   </div>
                 </>
               )}
               {signal.type === '技术发布' && (
                 <>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">发布方：</span>
-                    <span className="text-neutral-200">本源量子</span>
+                    <span className="text-slate-500 w-24">发布方：</span>
+                    <span className="text-slate-200">本源量子</span>
                   </div>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">产品名称：</span>
-                    <span className="text-neutral-200">本源司南</span>
+                    <span className="text-slate-500 w-24">产品名称：</span>
+                    <span className="text-slate-200">本源司南</span>
                   </div>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">产品类型：</span>
-                    <span className="text-neutral-200">量子计算操作系统</span>
+                    <span className="text-slate-500 w-24">产品类型：</span>
+                    <span className="text-slate-200">量子计算操作系统</span>
                   </div>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">研究方向：</span>
-                    <span className="text-neutral-200">拓扑量子纠错</span>
+                    <span className="text-slate-500 w-24">研究方向：</span>
+                    <span className="text-slate-200">拓扑量子纠错</span>
                   </div>
                   <div className="flex">
-                    <span className="text-neutral-500 w-24">关键指标：</span>
-                    <span className="text-neutral-200">容错阈值 2.1%</span>
+                    <span className="text-slate-500 w-24">关键指标：</span>
+                    <span className="text-slate-200">容错阈值 2.1%</span>
                   </div>
                 </>
               )}
@@ -426,37 +424,37 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
               {signal.relatedEntities.companies > 0 && (
                 <button 
                   onClick={() => alert('跳转到公司详情页（开发中）')}
-                  className="bg-neutral-800 rounded-lg p-4 hover:border hover:border-orange-600 transition-all cursor-pointer text-left"
+                  className="bg-[rgba(59,130,246,0.05)] rounded-lg p-4 border border-[rgba(59,130,246,0.08)] hover:border-blue-400/40 transition-all cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <Building2 className="w-4 h-4 text-orange-600" />
+                    <Building2 className="w-4 h-4 text-blue-400" />
                     <span className="text-sm font-semibold">公司</span>
                   </div>
-                  <div className="text-xs text-neutral-400">{signal.relatedEntities.companies} 家</div>
+                  <div className="text-xs text-slate-400">{signal.relatedEntities.companies} 家</div>
                 </button>
               )}
               {signal.relatedEntities.people > 0 && (
                 <button 
                   onClick={() => alert('跳转到人物详情页（开发中）')}
-                  className="bg-neutral-800 rounded-lg p-4 hover:border hover:border-orange-600 transition-all cursor-pointer text-left"
+                  className="bg-[rgba(59,130,246,0.05)] rounded-lg p-4 border border-[rgba(59,130,246,0.08)] hover:border-blue-400/40 transition-all cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <User className="w-4 h-4 text-orange-600" />
+                    <User className="w-4 h-4 text-blue-400" />
                     <span className="text-sm font-semibold">关键人物</span>
                   </div>
-                  <div className="text-xs text-neutral-400">{signal.relatedEntities.people} 人</div>
+                  <div className="text-xs text-slate-400">{signal.relatedEntities.people} 人</div>
                 </button>
               )}
               {signal.relatedEntities.technologies > 0 && (
                 <button 
                   onClick={() => alert('跳转到知识地图（开发中）')}
-                  className="bg-neutral-800 rounded-lg p-4 hover:border hover:border-orange-600 transition-all cursor-pointer text-left"
+                  className="bg-[rgba(59,130,246,0.05)] rounded-lg p-4 border border-[rgba(59,130,246,0.08)] hover:border-blue-400/40 transition-all cursor-pointer text-left"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <Lightbulb className="w-4 h-4 text-orange-600" />
+                    <Lightbulb className="w-4 h-4 text-blue-400" />
                     <span className="text-sm font-semibold">相关技术</span>
                   </div>
-                  <div className="text-xs text-neutral-400">{signal.relatedEntities.technologies} 条</div>
+                  <div className="text-xs text-slate-400">{signal.relatedEntities.technologies} 条</div>
                 </button>
               )}
             </div>
@@ -473,8 +471,8 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                   onClick={() => setActiveTab('全部')}
                   className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
                     activeTab === '全部' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-[rgba(59,130,246,0.05)] hover:bg-[rgba(59,130,246,0.1)] text-slate-300 border border-[rgba(59,130,246,0.1)]'
                   }`}
                 >
                   全部 ({relatedSignals.length})
@@ -483,8 +481,8 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                   onClick={() => setActiveTab('论文')}
                   className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
                     activeTab === '论文' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-[rgba(59,130,246,0.05)] hover:bg-[rgba(59,130,246,0.1)] text-slate-300 border border-[rgba(59,130,246,0.1)]'
                   }`}
                 >
                   论文 ({relatedSignals.filter(s => s.type === '论文').length})
@@ -493,8 +491,8 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                   onClick={() => setActiveTab('政策规划')}
                   className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
                     activeTab === '政策规划' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-[rgba(59,130,246,0.05)] hover:bg-[rgba(59,130,246,0.1)] text-slate-300 border border-[rgba(59,130,246,0.1)]'
                   }`}
                 >
                   政策规划 ({relatedSignals.filter(s => s.type === '政策规划').length})
@@ -503,8 +501,8 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                   onClick={() => setActiveTab('融资事件')}
                   className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
                     activeTab === '融资事件' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-[rgba(59,130,246,0.05)] hover:bg-[rgba(59,130,246,0.1)] text-slate-300 border border-[rgba(59,130,246,0.1)]'
                   }`}
                 >
                   融资事件 ({relatedSignals.filter(s => s.type === '融资事件').length})
@@ -513,8 +511,8 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                   onClick={() => setActiveTab('产业化进展')}
                   className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
                     activeTab === '产业化进展' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-[rgba(59,130,246,0.05)] hover:bg-[rgba(59,130,246,0.1)] text-slate-300 border border-[rgba(59,130,246,0.1)]'
                   }`}
                 >
                   产业化进展 ({relatedSignals.filter(s => s.type === '产业化进展').length})
@@ -523,8 +521,8 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                   onClick={() => setActiveTab('技术发布')}
                   className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
                     activeTab === '技术发布' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-[rgba(59,130,246,0.05)] hover:bg-[rgba(59,130,246,0.1)] text-slate-300 border border-[rgba(59,130,246,0.1)]'
                   }`}
                 >
                   技术发布 ({relatedSignals.filter(s => s.type === '技术发布').length})
@@ -533,8 +531,8 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                   onClick={() => setActiveTab('人才组织')}
                   className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
                     activeTab === '人才组织' 
-                      ? 'bg-orange-600 text-white' 
-                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-[rgba(59,130,246,0.05)] hover:bg-[rgba(59,130,246,0.1)] text-slate-300 border border-[rgba(59,130,246,0.1)]'
                   }`}
                 >
                   人才组织 ({relatedSignals.filter(s => s.type === '人才组织').length})
@@ -552,19 +550,19 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                         // In real app, would open this signal's detail
                         setTimeout(() => alert(`查看信号: ${relatedSignal.title}`), 100);
                       }}
-                      className="w-full bg-neutral-800 rounded p-3 hover:bg-neutral-700 transition-colors cursor-pointer text-left"
+                      className="w-full bg-[rgba(59,130,246,0.05)] rounded-lg p-3 border border-[rgba(59,130,246,0.08)] hover:bg-[rgba(59,130,246,0.1)] transition-colors cursor-pointer text-left"
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-semibold line-clamp-1">{relatedSignal.title}</span>
-                        <span className="text-xs text-neutral-500 ml-2 whitespace-nowrap">{relatedSignal.timestamp}</span>
+                        <span className="text-xs text-slate-500 ml-2 whitespace-nowrap">{relatedSignal.timestamp}</span>
                       </div>
-                      <div className="text-xs text-neutral-400">
+                      <div className="text-xs text-slate-400">
                         {relatedSignal.type} · {relatedSignal.priority === 'high' ? '高' : relatedSignal.priority === 'mid' ? '中' : '低'}优先级
                       </div>
                     </button>
                   ))
                 ) : (
-                  <div className="text-center py-6 text-neutral-500 text-sm">
+                  <div className="text-center py-6 text-slate-500 text-sm">
                     暂无 {activeTab} 类型的相关信号
                   </div>
                 )}
@@ -573,24 +571,24 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
           )}
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-neutral-800">
+          <div className="flex gap-3 pt-4 border-t border-[rgba(59,130,246,0.12)]">
             <button 
               onClick={handleAddNote}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 hover:bg-orange-700 rounded font-semibold transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold transition-colors"
             >
               <FileText className="w-4 h-4" />
               记录为笔记
             </button>
             <button 
               onClick={handleAddToFocus}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800 hover:bg-neutral-700 rounded font-semibold transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 glass-card rounded-lg hover:bg-[rgba(59,130,246,0.08)] font-semibold transition-colors"
             >
               <Bookmark className="w-4 h-4" />
               加入关注
             </button>
             <button 
               onClick={handleChatAnalysis}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-neutral-800 hover:bg-neutral-700 rounded font-semibold transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 glass-card rounded-lg hover:bg-[rgba(59,130,246,0.08)] font-semibold transition-colors"
             >
               <MessageSquare className="w-4 h-4" />
               Chat 分析
@@ -598,10 +596,10 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
           </div>
 
           {/* Original Source */}
-          <div className="pt-4 border-t border-neutral-800">
+          <div className="pt-4 border-t border-[rgba(59,130,246,0.12)]">
             <a
               href="#"
-              className="flex items-center gap-2 text-sm text-orange-600 hover:text-orange-500 transition-colors"
+              className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
             >
               <ExternalLink className="w-4 h-4" />
               查看原文链接
@@ -613,9 +611,9 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
       {/* Toast Notification */}
       {showToast && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[110] animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="bg-neutral-800 border border-neutral-700 rounded-lg px-6 py-3 shadow-2xl flex items-center gap-3">
-            <div className="w-1 h-8 bg-orange-600 rounded-full"></div>
-            <p className="text-sm text-neutral-200">{toastMessage}</p>
+          <div className="bg-[rgba(10,10,28,0.9)] border border-[rgba(59,130,246,0.15)] rounded-lg px-6 py-3 shadow-2xl shadow-blue-900/30 flex items-center gap-3">
+            <div className="w-1 h-8 bg-blue-500 rounded-full"></div>
+            <p className="text-sm text-slate-200">{toastMessage}</p>
           </div>
         </div>
       )}

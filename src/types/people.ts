@@ -106,19 +106,19 @@ export interface ResearcherListResponse {
 // 职称显示配置
 export const TITLE_CONFIG: Record<TitleLevel, { label: string; color: string; order: number }> = {
   pi: { label: '首席/PI', color: 'text-red-500', order: 0 },
-  professor: { label: '教授', color: 'text-orange-500', order: 1 },
+  professor: { label: '教授', color: 'text-cyan-500', order: 1 },
   associate: { label: '副教授', color: 'text-amber-500', order: 2 },
   postdoc: { label: '博士后', color: 'text-blue-500', order: 3 },
-  phd: { label: '博士生', color: 'text-neutral-400', order: 4 },
-  other: { label: '其他', color: 'text-neutral-500', order: 5 },
+  phd: { label: '博士生', color: 'text-slate-400', order: 4 },
+  other: { label: '其他', color: 'text-slate-500', order: 5 },
 };
 
 // 机构显示配置
 export const INSTITUTION_CONFIG: Record<Institution, { name: string; shortName: string; color: string; icon: string }> = {
-  baqis: { name: '北京量子信息科学研究院', shortName: '北京量子院', color: 'bg-blue-600', icon: '🏛️' },
-  qscgba: { name: '粤港澳大湾区量子科学中心', shortName: '粤港澳量子中心', color: 'bg-purple-600', icon: '🌊' },
-  tsinghua: { name: '清华大学', shortName: '清华', color: 'bg-red-600', icon: '🎓' },
-  ustc: { name: '中国科学技术大学', shortName: '中科大', color: 'bg-indigo-600', icon: '🔬' },
-  zju: { name: '浙江大学', shortName: '浙大', color: 'bg-emerald-600', icon: '📚' },
-  other: { name: '其他机构', shortName: '其他', color: 'bg-neutral-600', icon: '🏢' },
+  baqis: { name: '北京量子信息科学研究院', shortName: '北京量子院', color: 'bg-blue-600', icon: '' },
+  qscgba: { name: '粤港澳大湾区量子科学中心', shortName: '粤港澳量子中心', color: 'bg-purple-600', icon: '' },
+  tsinghua: { name: '清华大学', shortName: '清华', color: 'bg-red-600', icon: '' },
+  ustc: { name: '中国科学技术大学', shortName: '中科大', color: 'bg-indigo-600', icon: '' },
+  zju: { name: '浙江大学', shortName: '浙大', color: 'bg-emerald-600', icon: '' },
+  other: { name: '其他机构', shortName: '其他', color: 'bg-slate-600', icon: '' },
 };

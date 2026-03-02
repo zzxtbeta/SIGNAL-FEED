@@ -22,16 +22,15 @@ export default function InstitutionBadge({
   return (
     <span
       className={`
-        inline-flex items-center gap-1
+        inline-flex items-center
         font-semibold rounded
-        text-white
         ${config.color}
         ${sizeClasses[size]}
       `}
+      style={{ color: '#ffffff' }}
       title={config.name}
     >
-      <span>{config.icon}</span>
-      <span>{showFullName ? config.name : config.shortName}</span>
+      {showFullName ? config.name : config.shortName}
     </span>
   );
 }

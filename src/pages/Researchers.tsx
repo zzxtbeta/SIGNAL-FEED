@@ -66,44 +66,44 @@ export default function Researchers() {
   return (
     <div>
       {/* Page Header */}
-      <div className="mb-6">
-        <h1 className="font-display text-5xl text-orange-600 mb-2">QUANTUM TALENT POOL</h1>
-        <p className="text-neutral-400 text-sm">
-          量子科技领域研究人员 · 共 {loading ? '...' : total} 人
+      <div className="mb-6 animate-fade-up">
+        <h1 className="font-display text-4xl text-shimmer tracking-widest mb-1">QUANTUM TALENT POOL</h1>
+        <p className="text-[#8892aa] text-sm">
+          量子科技领域研究人员 · 共 <span className="text-blue-400 font-medium">{loading ? '...' : total}</span> 人
         </p>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-4 mb-6">
+      <div className="glass-card rounded-xl p-4 mb-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8892aa] pointer-events-none" />
           <input
             type="text"
             placeholder="搜索姓名、机构、研究方向..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-neutral-500 focus:outline-none focus:border-orange-600 transition-colors"
+            className="w-full bg-[rgba(16,16,31,0.6)] border border-[rgba(59,130,246,0.15)] rounded-lg pl-10 pr-4 py-2.5 text-[#e0e8ff] placeholder:text-[#8892aa] focus:outline-none focus:border-blue-500/50 focus:shadow-glow-sm transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-neutral-700 rounded"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-[rgba(59,130,246,0.1)] rounded transition-colors"
             >
-              <X className="w-4 h-4 text-neutral-500" />
+              <X className="w-4 h-4 text-[#8892aa] hover:text-blue-400" />
             </button>
           )}
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-4 mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-4 h-4 text-orange-600" />
-          <span className="font-semibold text-sm">筛选条件</span>
+      <div className="glass-card rounded-xl p-4 mb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Filter className="w-3.5 h-3.5 text-blue-400" />
+          <span className="font-medium text-sm text-[#c8d4f0]">筛选条件</span>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="ml-auto text-xs text-neutral-400 hover:text-orange-600 transition-colors"
+              className="ml-auto text-xs text-[#8892aa] hover:text-blue-400 transition-colors"
             >
               清除全部
             </button>
@@ -111,8 +111,8 @@ export default function Researchers() {
         </div>
 
         {/* Institution Filters */}
-        <div className="mb-4">
-          <div className="text-xs text-neutral-500 mb-2">所属机构</div>
+        <div className="mb-3">
+          <div className="text-[10px] text-[#8892aa] mb-2 uppercase tracking-widest">所属机构</div>
           <div className="flex flex-wrap gap-2">
             {institutions.map(inst => (
               <button
@@ -127,23 +127,21 @@ export default function Researchers() {
         </div>
 
         {/* Title Filters */}
-        <div className="mb-4">
-          <div className="text-xs text-neutral-500 mb-2 flex items-center gap-1">
+        <div className="mb-3">
+          <div className="text-[10px] text-[#8892aa] mb-2 flex items-center gap-1 uppercase tracking-widest">
             <GraduationCap className="w-3 h-3" />
             职称级别
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {titleLevels.map(title => (
               <button
                 key={title}
                 onClick={() => toggleTitle(title)}
-                className={`
-                  px-3 py-1.5 rounded text-xs font-medium transition-all
-                  ${selectedTitles.includes(title)
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-neutral-800 text-neutral-400 hover:bg-neutral-700'
-                  }
-                `}
+                className={`btn-glow px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  selectedTitles.includes(title)
+                    ? 'bg-blue-600 text-white border border-blue-500 shadow-glow-sm'
+                    : 'bg-[rgba(59,130,246,0.06)] border border-[rgba(59,130,246,0.15)] text-[#8892aa] hover:text-[#c8d4f0] hover:border-blue-500/30'
+                }`}
               >
                 {TITLE_CONFIG[title].label}
               </button>
@@ -158,9 +156,9 @@ export default function Researchers() {
               type="checkbox"
               checked={hasEmail}
               onChange={(e) => setHasEmail(e.target.checked)}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-orange-600 focus:ring-orange-600"
+              className="w-4 h-4 rounded border-[rgba(59,130,246,0.2)] bg-[rgba(10,10,28,0.8)] text-blue-500 focus:ring-blue-500"
             />
-            <span className="text-sm text-neutral-400 flex items-center gap-1">
+            <span className="text-sm text-slate-400 flex items-center gap-1">
               <Mail className="w-3.5 h-3.5" />
               有邮箱
             </span>
@@ -170,9 +168,9 @@ export default function Researchers() {
               type="checkbox"
               checked={hasBiography}
               onChange={(e) => setHasBiography(e.target.checked)}
-              className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-orange-600 focus:ring-orange-600"
+              className="w-4 h-4 rounded border-[rgba(59,130,246,0.2)] bg-[rgba(10,10,28,0.8)] text-blue-500 focus:ring-blue-500"
             />
-            <span className="text-sm text-neutral-400 flex items-center gap-1">
+            <span className="text-sm text-slate-400 flex items-center gap-1">
               <FileText className="w-3.5 h-3.5" />
               有简介
             </span>
@@ -182,27 +180,27 @@ export default function Researchers() {
 
       {/* Active Filter Tags */}
       {hasActiveFilters && (
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-1.5 mb-4">
           {searchQuery && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-600/20 text-orange-400 text-xs rounded border border-orange-600/30">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[rgba(59,130,246,0.1)] text-blue-300 text-xs rounded-full border border-[rgba(59,130,246,0.25)]">
               搜索: {searchQuery}
-              <button onClick={() => setSearchQuery('')} className="hover:text-white">
+              <button onClick={() => setSearchQuery('')} className="hover:text-white ml-0.5">
                 <X className="w-3 h-3" />
               </button>
             </span>
           )}
           {selectedInstitutions.map(inst => (
-            <span key={inst} className="inline-flex items-center gap-1 px-2 py-1 bg-neutral-800 text-neutral-300 text-xs rounded">
+            <span key={inst} className="inline-flex items-center gap-1 px-2.5 py-1 bg-[rgba(59,130,246,0.08)] text-[#c8d4f0] text-xs rounded-full border border-[rgba(59,130,246,0.15)]">
               {INSTITUTION_CONFIG[inst].shortName}
-              <button onClick={() => toggleInstitution(inst)} className="hover:text-white">
+              <button onClick={() => toggleInstitution(inst)} className="hover:text-white ml-0.5">
                 <X className="w-3 h-3" />
               </button>
             </span>
           ))}
           {selectedTitles.map(title => (
-            <span key={title} className="inline-flex items-center gap-1 px-2 py-1 bg-neutral-800 text-neutral-300 text-xs rounded">
+            <span key={title} className="inline-flex items-center gap-1 px-2.5 py-1 bg-[rgba(59,130,246,0.08)] text-[#c8d4f0] text-xs rounded-full border border-[rgba(59,130,246,0.15)]">
               {TITLE_CONFIG[title].label}
-              <button onClick={() => toggleTitle(title)} className="hover:text-white">
+              <button onClick={() => toggleTitle(title)} className="hover:text-white ml-0.5">
                 <X className="w-3 h-3" />
               </button>
             </span>
@@ -212,9 +210,9 @@ export default function Researchers() {
 
       {/* Researchers Grid */}
       {loading ? (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-12 text-center">
-          <div className="inline-block w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-neutral-400 mt-4">加载研究人员数据...</p>
+        <div className="glass-card rounded-xl p-12 text-center">
+          <div className="inline-block w-8 h-8 border-2 border-blue-500/30 border-t-blue-400 rounded-full animate-spin"></div>
+          <p className="text-[#8892aa] mt-4 text-sm">加载研究人员数据...</p>
         </div>
       ) : (
         <>
@@ -223,7 +221,7 @@ export default function Researchers() {
               {researchers.map((researcher, index) => (
                 <div
                   key={researcher.id}
-                  className="animate-in fade-in slide-in-from-bottom-4"
+                  className="animate-in fade-in slide-in-from-bottom-4 h-full"
                   style={{ animationDelay: `${index * 30}ms` }}
                 >
                   <ResearcherCard
@@ -234,23 +232,23 @@ export default function Researchers() {
               ))}
             </div>
           ) : (
-            <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-12 text-center">
-              <Users className="w-16 h-16 text-neutral-700 mx-auto mb-4" />
-              <p className="text-neutral-400 text-lg mb-2">未找到符合条件的研究人员</p>
-              <p className="text-neutral-500 text-sm">尝试调整筛选条件</p>
+            <div className="glass-card rounded-xl p-12 text-center">
+              <Users className="w-14 h-14 text-[rgba(59,130,246,0.2)] mx-auto mb-4" />
+              <p className="text-[#c8d4f0] text-base mb-2 font-medium">未找到符合条件的研究人员</p>
+              <p className="text-[#8892aa] text-sm">尝试调整筛选条件</p>
             </div>
           )}
 
           {/* Results Count & Load More */}
-          <div className="text-center py-6 space-y-4">
-            <p className="text-neutral-500 text-sm">
-              显示 {researchers.length} / {total} 条结果
+          <div className="text-center py-6 space-y-3">
+            <p className="text-[#8892aa] text-xs">
+              显示 <span className="text-blue-400">{researchers.length}</span> / <span className="text-blue-400">{total}</span> 条结果
             </p>
             {hasMore && (
               <button
                 onClick={() => setPage(p => p + 1)}
                 disabled={loading}
-                className="px-6 py-2.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors border border-neutral-700"
+                className="btn-glow px-6 py-2 bg-[rgba(59,130,246,0.08)] hover:bg-[rgba(59,130,246,0.15)] disabled:opacity-40 text-[#c8d4f0] text-sm font-medium rounded-lg transition-all border border-[rgba(59,130,246,0.2)] hover:border-blue-500/40"
               >
                 {loading ? '加载中...' : '加载更多'}
               </button>

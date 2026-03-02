@@ -8,9 +8,9 @@ import { signalApi } from '../api/signals';
 
 const trendIcons = {
   rising: <TrendingUp className="w-4 h-4 text-red-500" />,
-  stable: <Minus className="w-4 h-4 text-neutral-400" />,
-  declining: <TrendingDown className="w-4 h-4 text-neutral-500" />,
-  early: <Minus className="w-4 h-4 text-neutral-400" />,
+  stable: <Minus className="w-4 h-4 text-slate-400" />,
+  declining: <TrendingDown className="w-4 h-4 text-slate-500" />,
+  early: <Minus className="w-4 h-4 text-slate-400" />,
 };
 
 const trendLabels = {
@@ -187,8 +187,8 @@ export default function KnowledgeMap() {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="inline-block w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-neutral-400">加载知识地图...</p>
+          <div className="inline-block w-8 h-8 border-2 border-blue-500/30 border-t-blue-400 rounded-full animate-spin mb-4"></div>
+          <p className="text-slate-400">加载知识地图...</p>
         </div>
       </div>
     );
@@ -200,16 +200,16 @@ export default function KnowledgeMap() {
     <div>
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="font-display text-5xl text-orange-600 mb-2">QUANTUM TECH MAP</h1>
-        <p className="text-neutral-400 text-sm">
+        <h1 className="font-display text-4xl text-shimmer tracking-widest mb-2">QUANTUM TECH MAP</h1>
+        <p className="text-slate-400 text-sm">
           量子科技知识地图 · {routes.length} 条技术路线 · {categories.length} 个技术板块
         </p>
       </div>
 
       <div className="grid grid-cols-12 gap-6">
         {/* Tree View */}
-        <div className="col-span-5 bg-neutral-900 border border-neutral-800 rounded-lg p-6 h-[calc(100vh-16rem)] overflow-y-auto">
-          <h2 className="font-display text-2xl text-orange-600 mb-6 sticky top-0 bg-neutral-900 pb-2">
+        <div className="col-span-5 glass-card rounded-xl p-6 h-[calc(100vh-16rem)] overflow-y-auto">
+          <h2 className="font-display text-2xl text-blue-400 mb-6 sticky top-0 bg-[rgba(5,5,14,0.95)] pb-2">
             技术板块
           </h2>
 
@@ -219,21 +219,21 @@ export default function KnowledgeMap() {
               const isCategoryExpanded = expandedCategories.includes(category.id);
               
               return (
-                <div key={category.id} className="bg-neutral-800/50 rounded-lg overflow-hidden">
+                <div key={category.id} className="bg-[rgba(59,130,246,0.04)] rounded-lg border border-[rgba(59,130,246,0.08)] overflow-hidden">
                   {/* Category层 */}
                   <div
                     onClick={() => toggleCategory(category.id)}
-                    className="p-4 cursor-pointer hover:bg-neutral-800 transition-all flex items-center justify-between group"
+                    className="p-4 cursor-pointer hover:bg-slate-800 transition-all flex items-center justify-between group"
                   >
                     <span className="flex items-center gap-3">
                       <div className={`transition-transform duration-200 ${isCategoryExpanded ? 'rotate-90' : ''}`}>
-                        <ChevronRight className="w-5 h-5 text-orange-600" />
+                        <ChevronRight className="w-5 h-5 text-blue-400" />
                       </div>
-                      <span className="font-bold text-lg group-hover:text-orange-600 transition-colors">
+                      <span className="font-bold text-lg group-hover:text-blue-300 transition-colors">
                         {category.name}
                       </span>
                     </span>
-                    <span className="px-3 py-1 bg-neutral-700/50 text-neutral-400 text-xs font-semibold rounded-full group-hover:bg-orange-600/20 group-hover:text-orange-600 transition-all">
+                    <span className="px-3 py-1 bg-[rgba(59,130,246,0.06)] text-slate-400 text-xs font-semibold rounded-full group-hover:bg-blue-500/15 group-hover:text-blue-300 transition-all">
                       {directions.length} 个方向
                     </span>
                   </div>
@@ -246,23 +246,23 @@ export default function KnowledgeMap() {
                         const isDirectionExpanded = expandedDirections.includes(direction.id);
                         
                         return (
-                          <div key={direction.id} className="bg-neutral-900/50 rounded-lg overflow-hidden">
+                          <div key={direction.id} className="bg-[rgba(5,5,14,0.5)] rounded-lg overflow-hidden">
                             <div
                               onClick={(e) => {
                                 e.stopPropagation();
                                 toggleDirection(direction.id);
                               }}
-                              className="p-3 cursor-pointer hover:bg-neutral-800/80 transition-all flex items-center justify-between group"
+                              className="p-3 cursor-pointer hover:bg-slate-800/80 transition-all flex items-center justify-between group"
                             >
                               <span className="flex items-center gap-2">
                                 <div className={`transition-transform duration-200 ${isDirectionExpanded ? 'rotate-90' : ''}`}>
-                                  <ChevronRight className="w-4 h-4 text-orange-500" />
+                                  <ChevronRight className="w-4 h-4 text-blue-300" />
                                 </div>
-                                <span className="font-semibold text-sm group-hover:text-orange-600 transition-colors">
+                                <span className="font-semibold text-sm group-hover:text-blue-300 transition-colors">
                                   {direction.name}
                                 </span>
                               </span>
-                              <span className="px-2 py-0.5 bg-neutral-700/50 text-neutral-500 text-xs rounded-full group-hover:bg-orange-600/20 group-hover:text-orange-600 transition-all">
+                              <span className="px-2 py-0.5 bg-[rgba(59,130,246,0.06)] text-slate-500 text-xs rounded-full group-hover:bg-blue-500/15 group-hover:text-blue-300 transition-all">
                                 {technologies.length} 项
                               </span>
                             </div>
@@ -279,21 +279,21 @@ export default function KnowledgeMap() {
                                     }}
                                     className={`group relative overflow-hidden rounded-lg transition-all duration-200 ${
                                       currentNode?.id === tech.id
-                                        ? 'bg-gradient-to-r from-orange-600/20 to-red-600/20 shadow-lg shadow-orange-600/10'
-                                        : 'bg-neutral-800/30 hover:bg-neutral-800/60'
+                                        ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 shadow-lg shadow-blue-600/10'
+                                        : 'bg-[rgba(59,130,246,0.03)] hover:bg-[rgba(59,130,246,0.08)]'
                                     }`}
                                   >
                                     {/* 选中指示器 */}
                                     {currentNode?.id === tech.id && (
-                                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-600 to-red-600"></div>
+                                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-purple-500"></div>
                                     )}
                                     
                                     <div className="p-3 pl-4">
                                       <div className="flex items-center justify-between mb-1.5">
                                         <span className={`font-semibold text-sm transition-colors ${
                                           currentNode?.id === tech.id 
-                                            ? 'text-orange-500' 
-                                            : 'text-neutral-200 group-hover:text-orange-600'
+                                            ? 'text-blue-300' 
+                                            : 'text-slate-200 group-hover:text-blue-300'
                                         }`}>
                                           {tech.name}
                                         </span>
@@ -304,15 +304,15 @@ export default function KnowledgeMap() {
                                       <div className="flex items-center justify-between text-xs">
                                         <span className={`transition-colors ${
                                           currentNode?.id === tech.id 
-                                            ? 'text-orange-400/80' 
-                                            : 'text-neutral-500 group-hover:text-neutral-400'
+                                            ? 'text-blue-400/80' 
+                                            : 'text-slate-500 group-hover:text-slate-400'
                                         }`}>
                                           {tech.stage}
                                         </span>
                                         <span className={`transition-colors ${
                                           currentNode?.id === tech.id 
-                                            ? 'text-orange-400/80' 
-                                            : 'text-neutral-500 group-hover:text-neutral-400'
+                                            ? 'text-blue-400/80' 
+                                            : 'text-slate-500 group-hover:text-slate-400'
                                         }`}>
                                           {tech.paperCount} 篇论文
                                         </span>
@@ -334,23 +334,23 @@ export default function KnowledgeMap() {
         </div>
 
         {/* Detail Panel */}
-        <div className="col-span-7 bg-neutral-900 border border-neutral-800 rounded-lg p-6 h-[calc(100vh-16rem)] overflow-y-auto">
+        <div className="col-span-7 glass-card rounded-xl p-6 h-[calc(100vh-16rem)] overflow-y-auto">
           {currentNode ? (
             <>
-              <div className="mb-6 pb-6 border-b border-neutral-800/50">
+              <div className="mb-6 pb-6 border-b border-slate-800/50">
                 <div className="flex items-start justify-between mb-4">
-                  <h2 className="font-display text-3xl text-orange-600">{currentNode.name}</h2>
-                  <span className="px-4 py-2 bg-gradient-to-r from-red-600/20 to-orange-600/20 text-red-500 text-sm font-bold rounded-lg border border-red-600/30 flex items-center gap-2 shadow-lg shadow-red-600/10">
+                  <h2 className="font-display text-3xl text-blue-300">{currentNode.name}</h2>
+                  <span className="px-4 py-2 bg-gradient-to-r from-red-600/20 to-cyan-600/20 text-red-500 text-sm font-bold rounded-lg border border-red-600/30 flex items-center gap-2 shadow-lg shadow-red-600/10">
                     {trendIcons[currentNode.trend]}
                     {trendLabels[currentNode.trend]}
                   </span>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-neutral-400">
+                <div className="flex items-center gap-4 text-sm text-slate-400">
                   <span className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-orange-600"></div>
+                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                     {currentNode.paperCount} 篇论文
                     {papersTotal > 0 && papersTotal !== currentNode.paperCount && (
-                      <span className="text-xs text-orange-500">
+                      <span className="text-xs text-blue-300">
                         (API返回 {papersTotal} 篇)
                       </span>
                     )}
@@ -368,33 +368,33 @@ export default function KnowledgeMap() {
 
               <div className="space-y-6">
                 {/* Description */}
-                <div className="bg-gradient-to-br from-neutral-800/50 to-neutral-800/30 rounded-xl p-5 border border-neutral-700/50">
-                  <h3 className="font-semibold text-base mb-3 text-orange-600 flex items-center gap-2">
-                    <div className="w-1 h-5 bg-gradient-to-b from-orange-600 to-red-600 rounded-full"></div>
+                <div className="bg-gradient-to-br from-slate-800/50 to-slate-800/30 rounded-xl p-5 border border-slate-700/50">
+                  <h3 className="font-semibold text-base mb-3 text-blue-400 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
                     技术简介
                   </h3>
-                  <p className="text-neutral-300 leading-relaxed text-sm">{currentNode.description}</p>
+                  <p className="text-slate-300 leading-relaxed text-sm">{currentNode.description}</p>
                 </div>
 
                 {/* Maturity */}
-                <div className="bg-gradient-to-br from-neutral-800/50 to-neutral-800/30 rounded-xl p-5 border border-neutral-700/50">
-                  <h3 className="font-semibold text-base mb-4 text-orange-600 flex items-center gap-2">
-                    <div className="w-1 h-5 bg-gradient-to-b from-orange-600 to-red-600 rounded-full"></div>
+                <div className="bg-gradient-to-br from-slate-800/50 to-slate-800/30 rounded-xl p-5 border border-slate-700/50">
+                  <h3 className="font-semibold text-base mb-4 text-blue-400 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
                     技术成熟度
                   </h3>
                   <div className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <div className="flex-1 h-4 bg-neutral-900 rounded-full overflow-hidden shadow-inner">
+                      <div className="flex-1 h-4 bg-slate-900 rounded-full overflow-hidden shadow-inner">
                         <div 
-                          className="h-full bg-gradient-to-r from-orange-600 via-orange-500 to-red-600 transition-all duration-500 shadow-lg"
+                          className="h-full bg-gradient-to-r from-blue-600 via-blue-400 to-indigo-500 transition-all duration-500 shadow-lg"
                           style={{ width: `${stageProgress[currentNode.stage as keyof typeof stageProgress] || 50}%` }}
                         />
                       </div>
-                      <span className="text-sm font-bold text-orange-500 min-w-[120px] px-3 py-1 bg-orange-600/10 rounded-lg border border-orange-600/30">
+                      <span className="text-sm font-bold text-blue-300 min-w-[120px] px-3 py-1 bg-[rgba(59,130,246,0.1)] rounded-lg border border-[rgba(59,130,246,0.2)]">
                         {currentNode.stage}
                       </span>
                     </div>
-                    <div className="flex justify-between text-xs text-neutral-500 px-1">
+                    <div className="flex justify-between text-xs text-slate-500 px-1">
                       <span>理论研究</span>
                       <span>实验室</span>
                       <span>工程化</span>
@@ -404,14 +404,14 @@ export default function KnowledgeMap() {
                 </div>
 
                 {/* Academic Progress Timeline */}
-                <div className="bg-gradient-to-br from-neutral-800/50 to-neutral-800/30 rounded-xl p-5 border border-neutral-700/50">
+                <div className="bg-gradient-to-br from-slate-800/50 to-slate-800/30 rounded-xl p-5 border border-slate-700/50">
                   <div className="flex items-center justify-between mb-5">
-                    <h3 className="font-semibold text-base text-orange-600 flex items-center gap-2">
-                      <div className="w-1 h-5 bg-gradient-to-b from-orange-600 to-red-600 rounded-full"></div>
+                    <h3 className="font-semibold text-base text-blue-400 flex items-center gap-2">
+                      <div className="w-1 h-5 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
                       学术进展时间线
-                      {papersLoading && <span className="text-xs text-neutral-500">(加载中...)</span>}
+                      {papersLoading && <span className="text-xs text-slate-500">(加载中...)</span>}
                       {!papersLoading && papersTotal > 0 && (
-                        <span className="text-xs text-neutral-400">
+                        <span className="text-xs text-slate-400">
                           (共 {papersTotal} 篇{papers.length < papersTotal ? `，显示前 ${papers.length} 篇` : ''}{selectedYear !== 'all' ? `，筛选后 ${filteredPapers.length} 篇` : ''})
                         </span>
                       )}
@@ -419,7 +419,7 @@ export default function KnowledgeMap() {
                     <select
                       value={selectedYear}
                       onChange={(e) => setSelectedYear(e.target.value)}
-                      className="bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
+                      className="bg-[rgba(5,5,14,0.9)] border border-[rgba(59,130,246,0.08)] rounded-lg px-3 py-2 text-sm font-medium cursor-pointer hover:border-blue-400 transition-colors focus:outline-none focus:border-blue-400"
                     >
                       <option value="all">全部年份</option>
                       <option value="2026">2026年</option>
@@ -447,26 +447,26 @@ export default function KnowledgeMap() {
                             >
                               {/* Timeline connector */}
                               {index < filteredPapers.length - 1 && (
-                                <div className="absolute left-[5px] top-5 bottom-0 w-px bg-gradient-to-b from-orange-600/40 via-orange-600/20 to-transparent"></div>
+                                <div className="absolute left-[5px] top-5 bottom-0 w-px bg-gradient-to-b from-blue-500/40 via-blue-500/20 to-transparent"></div>
                               )}
                               
                               {/* Timeline dot */}
-                              <div className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-gradient-to-br from-orange-600 to-red-600 shadow-md shadow-orange-600/40 ring-2 ring-neutral-900 group-hover:ring-orange-600/30 transition-all"></div>
+                              <div className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 shadow-md shadow-blue-500/40 ring-2 ring-[rgba(5,5,14,1)] group-hover:ring-blue-500/30 transition-all"></div>
                               
-                              <div className="bg-gradient-to-br from-neutral-900/90 to-neutral-900/50 rounded-lg p-4 hover:from-neutral-800/90 hover:to-neutral-800/50 transition-all cursor-pointer group border border-neutral-800/50 hover:border-orange-600/40 hover:shadow-lg hover:shadow-orange-600/5">
+                              <div className="bg-[rgba(10,10,28,0.8)] rounded-lg p-4 hover:bg-[rgba(20,20,50,0.7)] transition-all cursor-pointer group border border-[rgba(59,130,246,0.08)] hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5">
                                 {/* Header */}
                                 <div className="flex items-start justify-between gap-3 mb-3">
                                   <div className="flex-1 min-w-0">
-                                    <h4 className="font-semibold text-sm leading-snug group-hover:text-orange-600 transition-colors mb-2 line-clamp-2">
+                                    <h4 className="font-semibold text-sm leading-snug group-hover:text-blue-300 transition-colors mb-2 line-clamp-2">
                                       {paper.title}
                                     </h4>
                                     <div className="flex items-center gap-2 flex-wrap">
-                                      <span className="text-xs text-neutral-500 flex items-center gap-1">
+                                      <span className="text-xs text-slate-500 flex items-center gap-1">
                                         <Calendar className="w-3 h-3" />
                                         {publishDate}
                                       </span>
                                       {paper.metadata?.influence_score && (
-                                        <span className="px-1.5 py-0.5 bg-orange-600/15 text-orange-500 text-xs font-semibold rounded border border-orange-600/25 flex items-center gap-1">
+                                        <span className="px-1.5 py-0.5 bg-[rgba(59,130,246,0.12)] text-blue-300 text-xs font-semibold rounded border border-[rgba(59,130,246,0.2)] flex items-center gap-1">
                                           <Sparkles className="w-3 h-3" />
                                           {paper.metadata.influence_score}
                                         </span>
@@ -478,14 +478,14 @@ export default function KnowledgeMap() {
                                 {/* Authors */}
                                 {authors.length > 0 && (
                                   <div className="flex items-start gap-2 mb-2.5 text-xs">
-                                    <Users className="w-3 h-3 text-orange-600/60 mt-0.5 flex-shrink-0" />
+                                    <Users className="w-3 h-3 text-blue-400/60 mt-0.5 flex-shrink-0" />
                                     <div className="flex-1 min-w-0">
-                                      <span className="text-neutral-300">
+                                      <span className="text-slate-300">
                                         {authors.slice(0, 3).map((a: any) => a.name).join('、')}
                                         {authors.length > 3 && ` 等${authors.length}人`}
                                       </span>
                                       {firstAuthor?.affiliation && (
-                                        <span className="text-neutral-500 ml-1.5">· {firstAuthor.affiliation}</span>
+                                        <span className="text-slate-500 ml-1.5">· {firstAuthor.affiliation}</span>
                                       )}
                                     </div>
                                   </div>
@@ -495,7 +495,7 @@ export default function KnowledgeMap() {
                                 {researchProblem && (
                                   <div className="bg-blue-600/8 border border-blue-600/15 rounded-md p-2.5 mb-2.5">
                                     <div className="text-xs text-blue-400/90 font-medium mb-1">研究问题</div>
-                                    <div className="text-xs text-neutral-300 leading-relaxed line-clamp-2">{researchProblem}</div>
+                                    <div className="text-xs text-slate-300 leading-relaxed line-clamp-2">{researchProblem}</div>
                                   </div>
                                 )}
 
@@ -507,13 +507,13 @@ export default function KnowledgeMap() {
                                       {keyContributions.slice(0, 2).map((contrib: any, idx: number) => (
                                         <div key={idx} className="flex items-start gap-1.5 text-xs">
                                           <span className="text-green-600/80 mt-0.5 text-[10px]">●</span>
-                                          <span className="text-neutral-300 leading-relaxed line-clamp-1 flex-1">
+                                          <span className="text-slate-300 leading-relaxed line-clamp-1 flex-1">
                                             {contrib.summary || contrib.detail}
                                           </span>
                                         </div>
                                       ))}
                                       {keyContributions.length > 2 && (
-                                        <div className="text-xs text-neutral-500 ml-3.5">
+                                        <div className="text-xs text-slate-500 ml-3.5">
                                           还有 {keyContributions.length - 2} 项贡献
                                         </div>
                                       )}
@@ -522,16 +522,16 @@ export default function KnowledgeMap() {
                                 )}
 
                                 {/* Footer */}
-                                <div className="flex items-center justify-between pt-2.5 border-t border-neutral-800/40">
-                                  <div className="flex items-center gap-2 text-xs text-neutral-500">
+                                <div className="flex items-center justify-between pt-2.5 border-t border-slate-800/40">
+                                  <div className="flex items-center gap-2 text-xs text-slate-500">
                                     {paper.metadata?.domain_ids && paper.metadata.domain_ids.length > 0 && (
                                       <span className="flex items-center gap-1">
-                                        <div className="w-1 h-1 rounded-full bg-neutral-600"></div>
+                                        <div className="w-1 h-1 rounded-full bg-slate-600"></div>
                                         {paper.metadata.domain_ids.length} 个领域
                                       </span>
                                     )}
                                   </div>
-                                  <div className="flex items-center gap-1 text-xs text-orange-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="flex items-center gap-1 text-xs text-blue-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                                     <span>查看详情</span>
                                     <ExternalLink className="w-3 h-3" />
                                   </div>
@@ -543,27 +543,27 @@ export default function KnowledgeMap() {
                       </div>
 
                       {/* Statistics */}
-                      <div className="grid grid-cols-3 gap-3 pt-4 border-t border-neutral-800/50">
-                        <div className="bg-neutral-900/50 rounded-lg p-3 text-center">
-                          <div className="text-2xl font-bold text-orange-600 mb-1">{filteredPapers.length}</div>
-                          <div className="text-xs text-neutral-400">相关论文</div>
+                      <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-800/50">
+                        <div className="bg-[rgba(10,10,24,0.5)] rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-blue-400 mb-1">{filteredPapers.length}</div>
+                          <div className="text-xs text-slate-400">相关论文</div>
                         </div>
-                        <div className="bg-neutral-900/50 rounded-lg p-3 text-center">
-                          <div className="text-2xl font-bold text-orange-600 mb-1">
+                        <div className="bg-[rgba(10,10,24,0.5)] rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-blue-400 mb-1">
                             {new Set(filteredPapers.flatMap(p => p.metadata?.authors?.map((a: any) => a.name) || [])).size}
                           </div>
-                          <div className="text-xs text-neutral-400">核心作者</div>
+                          <div className="text-xs text-slate-400">核心作者</div>
                         </div>
-                        <div className="bg-neutral-900/50 rounded-lg p-3 text-center">
-                          <div className="text-2xl font-bold text-orange-600 mb-1">
+                        <div className="bg-[rgba(10,10,24,0.5)] rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-blue-400 mb-1">
                             {new Set(filteredPapers.map(p => p.metadata?.authors?.[0]?.affiliation).filter(Boolean)).size}
                           </div>
-                          <div className="text-xs text-neutral-400">研究机构</div>
+                          <div className="text-xs text-slate-400">研究机构</div>
                         </div>
                       </div>
                     </>
                   ) : (
-                    <div className="text-center py-12 text-neutral-500">
+                    <div className="text-center py-12 text-slate-500">
                       <div className="text-5xl mb-3">📄</div>
                       <p className="text-sm">
                         {papersLoading ? '加载论文数据中...' : selectedYear === 'all' ? '暂无相关论文' : `${selectedYear}年暂无论文数据`}
@@ -574,80 +574,80 @@ export default function KnowledgeMap() {
 
                 {/* Key Problems */}
                 <div>
-                  <h3 className="font-semibold text-lg mb-3 text-orange-600">关键问题</h3>
+                  <h3 className="font-semibold text-lg mb-3 text-blue-400">关键问题</h3>
                   <div className="space-y-2">
-                    <div className="bg-neutral-800 rounded p-3 text-sm hover:bg-neutral-700 transition-colors">
-                      <span className="text-orange-600 font-semibold">•</span> 量子比特相干时间提升
+                    <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-3 text-sm border border-[rgba(59,130,246,0.08)] hover:bg-[rgba(59,130,246,0.08)] transition-colors">
+                      <span className="text-blue-400 font-semibold">•</span> 量子比特相干时间提升
                     </div>
-                    <div className="bg-neutral-800 rounded p-3 text-sm hover:bg-neutral-700 transition-colors">
-                      <span className="text-orange-600 font-semibold">•</span> 量子纠错码实现
+                    <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-3 text-sm border border-[rgba(59,130,246,0.08)] hover:bg-[rgba(59,130,246,0.08)] transition-colors">
+                      <span className="text-blue-400 font-semibold">•</span> 量子纠错码实现
                     </div>
-                    <div className="bg-neutral-800 rounded p-3 text-sm hover:bg-neutral-700 transition-colors">
-                      <span className="text-orange-600 font-semibold">•</span> 大规模量子芯片集成
+                    <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-3 text-sm border border-[rgba(59,130,246,0.08)] hover:bg-[rgba(59,130,246,0.08)] transition-colors">
+                      <span className="text-blue-400 font-semibold">•</span> 大规模量子芯片集成
                     </div>
                   </div>
                 </div>
 
                 {/* Related Companies */}
                 <div>
-                  <h3 className="font-semibold text-lg mb-3 text-orange-600">
+                  <h3 className="font-semibold text-lg mb-3 text-blue-400">
                     关联公司 ({currentNode.companyCount})
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-neutral-800 rounded p-3 hover:border hover:border-orange-600 transition-all cursor-pointer group">
-                      <div className="font-semibold text-sm mb-1 group-hover:text-orange-600 transition-colors">
+                    <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-3 border border-[rgba(59,130,246,0.08)] hover:border-blue-400/40 transition-all cursor-pointer group">
+                      <div className="font-semibold text-sm mb-1 group-hover:text-blue-300 transition-colors">
                         本源量子
                       </div>
-                      <div className="text-xs text-neutral-400">合肥 · C轮</div>
+                      <div className="text-xs text-slate-400">合肥 · C轮</div>
                     </div>
-                    <div className="bg-neutral-800 rounded p-3 hover:border hover:border-orange-600 transition-all cursor-pointer group">
-                      <div className="font-semibold text-sm mb-1 group-hover:text-orange-600 transition-colors">
+                    <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-3 border border-[rgba(59,130,246,0.08)] hover:border-blue-400/40 transition-all cursor-pointer group">
+                      <div className="font-semibold text-sm mb-1 group-hover:text-blue-300 transition-colors">
                         国盾量子
                       </div>
-                      <div className="text-xs text-neutral-400">合肥 · 上市</div>
+                      <div className="text-xs text-slate-400">合肥 · 上市</div>
                     </div>
-                    <div className="bg-neutral-800 rounded p-3 hover:border hover:border-orange-600 transition-all cursor-pointer group">
-                      <div className="font-semibold text-sm mb-1 group-hover:text-orange-600 transition-colors">
+                    <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-3 border border-[rgba(59,130,246,0.08)] hover:border-blue-400/40 transition-all cursor-pointer group">
+                      <div className="font-semibold text-sm mb-1 group-hover:text-blue-300 transition-colors">
                         启科量子
                       </div>
-                      <div className="text-xs text-neutral-400">北京 · A轮</div>
+                      <div className="text-xs text-slate-400">北京 · A轮</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Related Signals */}
                 <div>
-                  <h3 className="font-semibold text-lg mb-3 text-orange-600">
+                  <h3 className="font-semibold text-lg mb-3 text-blue-400">
                     关联信号 ({currentNode.signalCount})
                   </h3>
                   <div className="space-y-2">
-                    <div className="bg-neutral-800 rounded p-3 hover:bg-neutral-700 transition-colors cursor-pointer group">
+                    <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-3 border border-[rgba(59,130,246,0.08)] hover:bg-[rgba(59,130,246,0.08)] transition-colors cursor-pointer group">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-semibold group-hover:text-orange-600 transition-colors">
+                        <span className="text-sm font-semibold group-hover:text-blue-300 transition-colors">
                           本源量子完成C轮融资
                         </span>
-                        <span className="text-xs text-neutral-500">2026-02-01</span>
+                        <span className="text-xs text-slate-500">2026-02-01</span>
                       </div>
-                      <div className="text-xs text-neutral-400">融资 · 高优先级</div>
+                      <div className="text-xs text-slate-400">融资 · 高优先级</div>
                     </div>
-                    <div className="bg-neutral-800 rounded p-3 hover:bg-neutral-700 transition-colors cursor-pointer group">
+                    <div className="bg-[rgba(59,130,246,0.05)] rounded-lg p-3 border border-[rgba(59,130,246,0.08)] hover:bg-[rgba(59,130,246,0.08)] transition-colors cursor-pointer group">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-semibold group-hover:text-orange-600 transition-colors">
+                        <span className="text-sm font-semibold group-hover:text-blue-300 transition-colors">
                           Nature：新型拓扑量子纠错码突破
                         </span>
-                        <span className="text-xs text-neutral-500">2026-01-29</span>
+                        <span className="text-xs text-slate-500">2026-01-29</span>
                       </div>
-                      <div className="text-xs text-neutral-400">论文 · 高优先级</div>
+                      <div className="text-xs text-slate-400">论文 · 高优先级</div>
                     </div>
                   </div>
-                  <button className="w-full mt-3 py-2 bg-neutral-800 hover:bg-neutral-700 rounded text-sm font-semibold transition-colors hover:text-orange-600">
+                  <button className="w-full mt-3 py-2 glass-card rounded-lg text-sm font-semibold transition-colors hover:text-blue-300 hover:border-blue-500/40">
                     查看全部 {currentNode.signalCount} 条信号 →
                   </button>
                 </div>
               </div>
             </>
           ) : (
-            <div className="flex items-center justify-center h-full text-neutral-500">
+            <div className="flex items-center justify-center h-full text-slate-500">
               <div className="text-center">
                 <div className="text-6xl mb-4">🗺️</div>
                 <p>请从左侧选择一个技术路线</p>
