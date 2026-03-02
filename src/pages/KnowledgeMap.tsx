@@ -1,7 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useDomains } from '../hooks/useDomains';
-import { TechNode } from '../types';
-import { TrendingUp, TrendingDown, Minus, ChevronRight, ChevronDown, BookOpen, Calendar, Users, Building2 } from 'lucide-react';
+import { useDomainPapers } from '../hooks/useDomainPapers';
+import { TechNode, SignalDetail } from '../types';
+import { TrendingUp, TrendingDown, Minus, ChevronRight, Calendar, Users, ExternalLink, Sparkles } from 'lucide-react';
+import SignalDetailModal from '../components/SignalDetailModal';
+import { signalApi } from '../api/signals';
 
 const trendIcons = {
   rising: <TrendingUp className="w-4 h-4 text-red-500" />,
@@ -27,75 +30,102 @@ const stageProgress = {
 };
 
 export default function KnowledgeMap() {
-  const { domains, loading } = useDomains();
+  const { domains, loading, error } = useDomains();
+  
+  // 调试输出
+  console.log('🎯 KnowledgeMap render:', {
+    loading,
+    error: error?.message,
+    domainsCount: domains.length,
+    domains: domains.slice(0, 3)
+  });
   const [selectedNode, setSelectedNode] = useState<TechNode | null>(null);
-  const [expandedCategories, setExpandedCategories] = useState<string[]>([
-    'quantum-computing',
-    'quantum-communication',
-  ]);
-  const [selectedYear, setSelectedYear] = useState<string>('2026');
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(['1']); // 默认展开"量子"
+  const [expandedDirections, setExpandedDirections] = useState<string[]>([]); // 展开的direction
+  const [selectedYear, setSelectedYear] = useState<string>('all');
+  const [selectedPaper, setSelectedPaper] = useState<SignalDetail | null>(null);
 
-  // Mock论文数据 - 实际应该从API获取
-  const mockPapers = [
-    {
-      id: 'p1',
-      title: '基于拓扑保护的量子纠错新方案',
-      journal: 'Nature',
-      date: '2026-02-04',
-      authors: ['潘建伟', '陆朝阳'],
-      institution: '中国科学技术大学',
-      keyMetrics: '容错阈值 2.1%',
-      breakthrough: '提出新型拓扑量子纠错方案，容错阈值提升至2.1%',
-      relatedCompanies: ['本源量子'],
-      techArea: '超导量子计算',
-    },
-    {
-      id: 'p2',
-      title: '32离子高保真度量子纠缠实现',
-      journal: 'Science',
-      date: '2026-01-31',
-      authors: ['段路明'],
-      institution: '清华大学',
-      keyMetrics: '保真度 99.5%',
-      breakthrough: '实现32个离子的高保真度量子纠缠，创造新纪录',
-      relatedCompanies: [],
-      techArea: '离子阱量子计算',
-    },
-    {
-      id: 'p3',
-      title: '室温量子传感灵敏度突破',
-      journal: 'Physical Review Letters',
-      date: '2026-01-23',
-      authors: ['俞大鹏'],
-      institution: '南方科技大学',
-      keyMetrics: '灵敏度 1 pT/√Hz',
-      breakthrough: '利用金刚石NV色心实现室温高灵敏度磁场传感',
-      relatedCompanies: [],
-      techArea: '量子传感',
-    },
-    {
-      id: 'p4',
-      title: '量子态长时间存储新纪录',
-      journal: 'Nature Communications',
-      date: '2026-01-19',
-      authors: ['龙桂鲁'],
-      institution: '北京大学',
-      keyMetrics: '存储时间 1秒',
-      breakthrough: '实现量子态在固态系统中1秒存储，提升100倍',
-      relatedCompanies: [],
-      techArea: '量子存储',
-    },
-  ];
+  // 先定义categories和routes，因为后面会用到
+  const categories = useMemo(() => {
+    const cats = domains.filter((n) => n.type === 'category');
+    console.log('📂 Categories:', cats.map(c => ({ id: c.id, name: c.name, type: typeof c.id })));
+    return cats;
+  }, [domains]);
 
-  const categories = useMemo(() => 
-    domains.filter((n) => n.type === 'category'),
-    [domains]
-  );
+  const routes = useMemo(() => {
+    const rts = domains.filter((n) => n.type === 'route');
+    console.log('🛤️ Routes:', rts.map(r => ({ id: r.id, name: r.name, parentId: r.parentId, parentIdType: typeof r.parentId })));
+    return rts;
+  }, [domains]);
 
-  const routes = useMemo(() => 
-    domains.filter((n) => n.type === 'route'),
-    [domains]
-  );
+  // 获取当前选中节点相关的论文
+  const currentDomainIds = useMemo(() => {
+    if (!selectedNode) return undefined;
+    
+    const nodeId = parseInt(selectedNode.id);
+    
+    // 如果选中的是direction（第二层），需要包含它下面所有technology的id
+    if (selectedNode.type === 'route' && selectedNode.parentId) {
+      // 检查parent是否是category（即当前节点是direction）
+      const parent = domains.find(d => d.id === selectedNode.parentId);
+      if (parent && parent.type === 'category') {
+        // 这是direction节点，获取它下面所有technology的id
+        const technologies = routes.filter(r => r.parentId === selectedNode.id);
+        const techIds = technologies.map(t => parseInt(t.id));
+        
+        console.log('📌 Selected direction:', {
+          name: selectedNode.name,
+          id: nodeId,
+          technologiesCount: techIds.length,
+          techIds,
+          allIds: [nodeId, ...techIds]
+        });
+        
+        // 返回direction自己的id + 所有technology的id
+        return [nodeId, ...techIds];
+      }
+    }
+    
+    // 否则就是technology节点或category节点，只用自己的id
+    console.log('📌 Selected node:', {
+      name: selectedNode.name,
+      id: nodeId,
+      type: selectedNode.type
+    });
+    
+    return [nodeId];
+  }, [selectedNode, domains, routes]);
+
+  const { papers, loading: papersLoading, total: papersTotal } = useDomainPapers(currentDomainIds);
+  
+  // 调试论文数据
+  console.log('📄 Papers for domain:', {
+    domainIds: currentDomainIds,
+    papersCount: papers.length,
+    samplePapers: papers.slice(0, 2).map(p => ({
+      title: p.title.substring(0, 50),
+      domain_ids: p.metadata?.domain_ids
+    }))
+  });
+
+  // 根据选中年份过滤论文
+  const filteredPapers = useMemo(() => {
+    if (selectedYear === 'all') return papers;
+    return papers.filter(paper => {
+      const paperDate = paper.metadata?.publish_date || paper.timestamp;
+      return paperDate.startsWith(selectedYear);
+    });
+  }, [papers, selectedYear]);
+
+  // 获取direction层（第二层）
+  const getDirections = (categoryId: string) => {
+    return routes.filter(r => r.parentId === categoryId);
+  };
+
+  // 获取technology层（第三层）
+  const getTechnologies = (directionId: string) => {
+    return routes.filter(r => r.parentId === directionId);
+  };
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) =>
@@ -105,13 +135,53 @@ export default function KnowledgeMap() {
     );
   };
 
-  // 默认选中第一个技术路线
-  const defaultNode = useMemo(() => {
-    if (!selectedNode && routes.length > 0) {
-      return routes.find((r) => r.id === 'superconducting') || routes[0];
+  const toggleDirection = (directionId: string) => {
+    setExpandedDirections((prev) =>
+      prev.includes(directionId)
+        ? prev.filter((id) => id !== directionId)
+        : [...prev, directionId]
+    );
+  };
+
+  const handlePaperClick = async (paperId: string) => {
+    try {
+      const detail = await signalApi.getSignalById(paperId);
+      setSelectedPaper(detail);
+    } catch (error) {
+      console.error('Failed to fetch paper detail:', error);
     }
-    return selectedNode;
-  }, [selectedNode, routes]);
+  };
+
+  // 自动选中第一个technology节点
+  useEffect(() => {
+    if (!selectedNode && routes.length > 0) {
+      // 找到第一个有parentId且其parent也有parentId的节点（即technology层）
+      const firstTech = routes.find(r => {
+        const parent = routes.find(p => p.id === r.parentId);
+        return parent && parent.parentId; // parent是direction，有parentId指向domain
+      });
+      const nodeToSelect = firstTech || routes[0];
+      
+      if (nodeToSelect) {
+        console.log('🎯 Auto-selecting first node:', nodeToSelect.name);
+        setSelectedNode(nodeToSelect);
+        
+        // 自动展开相关的category和direction
+        const parent = routes.find(p => p.id === nodeToSelect.parentId);
+        if (parent) {
+          if (!expandedDirections.includes(parent.id)) {
+            setExpandedDirections(prev => [...prev, parent.id]);
+          }
+          if (parent.parentId) {
+            const parentId = parent.parentId as string;
+            if (!expandedCategories.includes(parentId)) {
+              setExpandedCategories(prev => [...prev, parentId]);
+            }
+          }
+        }
+      }
+    }
+  }, [routes.length, selectedNode, expandedDirections, expandedCategories]);
 
   if (loading) {
     return (
@@ -124,7 +194,7 @@ export default function KnowledgeMap() {
     );
   }
 
-  const currentNode = defaultNode;
+  const currentNode = selectedNode;
 
   return (
     <div>
@@ -143,50 +213,118 @@ export default function KnowledgeMap() {
             技术板块
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {categories.map((category) => {
-              const categoryRoutes = routes.filter((r) => r.parentId === category.id);
-              const isExpanded = expandedCategories.includes(category.id);
+              const directions = getDirections(category.id);
+              const isCategoryExpanded = expandedCategories.includes(category.id);
               
               return (
-                <div key={category.id} className="border-l-2 border-neutral-700 pl-4">
+                <div key={category.id} className="bg-neutral-800/50 rounded-lg overflow-hidden">
+                  {/* Category层 */}
                   <div
                     onClick={() => toggleCategory(category.id)}
-                    className="font-bold text-lg mb-3 cursor-pointer hover:text-orange-600 transition-colors flex items-center justify-between group"
+                    className="p-4 cursor-pointer hover:bg-neutral-800 transition-all flex items-center justify-between group"
                   >
-                    <span className="flex items-center gap-2">
-                      {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-                      {category.name}
+                    <span className="flex items-center gap-3">
+                      <div className={`transition-transform duration-200 ${isCategoryExpanded ? 'rotate-90' : ''}`}>
+                        <ChevronRight className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <span className="font-bold text-lg group-hover:text-orange-600 transition-colors">
+                        {category.name}
+                      </span>
                     </span>
-                    <span className="text-sm text-neutral-500 group-hover:text-orange-600">
-                      {categoryRoutes.length} 条路线
+                    <span className="px-3 py-1 bg-neutral-700/50 text-neutral-400 text-xs font-semibold rounded-full group-hover:bg-orange-600/20 group-hover:text-orange-600 transition-all">
+                      {directions.length} 个方向
                     </span>
                   </div>
                   
-                  {isExpanded && (
-                    <div className="ml-2 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                      {categoryRoutes.map((route) => (
-                        <div
-                          key={route.id}
-                          onClick={() => setSelectedNode(route)}
-                          className={`p-3 rounded cursor-pointer border-l-4 transition-all duration-200 ${
-                            currentNode?.id === route.id
-                              ? 'border-red-600 bg-neutral-800 shadow-lg'
-                              : 'border-neutral-600 hover:border-orange-600 hover:bg-neutral-800/50'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-semibold text-sm">{route.name}</span>
-                            <span className="text-xs flex items-center gap-1">
-                              {trendIcons[route.trend]}
-                            </span>
+                  {/* Direction层 */}
+                  {isCategoryExpanded && (
+                    <div className="px-4 pb-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                      {directions.map((direction) => {
+                        const technologies = getTechnologies(direction.id);
+                        const isDirectionExpanded = expandedDirections.includes(direction.id);
+                        
+                        return (
+                          <div key={direction.id} className="bg-neutral-900/50 rounded-lg overflow-hidden">
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleDirection(direction.id);
+                              }}
+                              className="p-3 cursor-pointer hover:bg-neutral-800/80 transition-all flex items-center justify-between group"
+                            >
+                              <span className="flex items-center gap-2">
+                                <div className={`transition-transform duration-200 ${isDirectionExpanded ? 'rotate-90' : ''}`}>
+                                  <ChevronRight className="w-4 h-4 text-orange-500" />
+                                </div>
+                                <span className="font-semibold text-sm group-hover:text-orange-600 transition-colors">
+                                  {direction.name}
+                                </span>
+                              </span>
+                              <span className="px-2 py-0.5 bg-neutral-700/50 text-neutral-500 text-xs rounded-full group-hover:bg-orange-600/20 group-hover:text-orange-600 transition-all">
+                                {technologies.length} 项
+                              </span>
+                            </div>
+                            
+                            {/* Technology层 */}
+                            {isDirectionExpanded && (
+                              <div className="px-3 pb-2 space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
+                                {technologies.map((tech) => (
+                                  <div
+                                    key={tech.id}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedNode(tech);
+                                    }}
+                                    className={`group relative overflow-hidden rounded-lg transition-all duration-200 ${
+                                      currentNode?.id === tech.id
+                                        ? 'bg-gradient-to-r from-orange-600/20 to-red-600/20 shadow-lg shadow-orange-600/10'
+                                        : 'bg-neutral-800/30 hover:bg-neutral-800/60'
+                                    }`}
+                                  >
+                                    {/* 选中指示器 */}
+                                    {currentNode?.id === tech.id && (
+                                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-600 to-red-600"></div>
+                                    )}
+                                    
+                                    <div className="p-3 pl-4">
+                                      <div className="flex items-center justify-between mb-1.5">
+                                        <span className={`font-semibold text-sm transition-colors ${
+                                          currentNode?.id === tech.id 
+                                            ? 'text-orange-500' 
+                                            : 'text-neutral-200 group-hover:text-orange-600'
+                                        }`}>
+                                          {tech.name}
+                                        </span>
+                                        <span className="text-xs flex items-center gap-1">
+                                          {trendIcons[tech.trend]}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center justify-between text-xs">
+                                        <span className={`transition-colors ${
+                                          currentNode?.id === tech.id 
+                                            ? 'text-orange-400/80' 
+                                            : 'text-neutral-500 group-hover:text-neutral-400'
+                                        }`}>
+                                          {tech.stage}
+                                        </span>
+                                        <span className={`transition-colors ${
+                                          currentNode?.id === tech.id 
+                                            ? 'text-orange-400/80' 
+                                            : 'text-neutral-500 group-hover:text-neutral-400'
+                                        }`}>
+                                          {tech.paperCount} 篇论文
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
-                          <div className="text-xs text-neutral-400 flex items-center justify-between">
-                            <span>{route.stage}</span>
-                            <span>{route.signalCount} 条信号</span>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -199,37 +337,64 @@ export default function KnowledgeMap() {
         <div className="col-span-7 bg-neutral-900 border border-neutral-800 rounded-lg p-6 h-[calc(100vh-16rem)] overflow-y-auto">
           {currentNode ? (
             <>
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-800">
-                <h2 className="font-display text-3xl text-orange-600">{currentNode.name}</h2>
-                <span className="px-3 py-1 bg-red-600/20 text-red-500 text-sm font-bold rounded border border-red-600/30 flex items-center gap-2">
-                  {trendIcons[currentNode.trend]}
-                  {trendLabels[currentNode.trend]}
-                </span>
+              <div className="mb-6 pb-6 border-b border-neutral-800/50">
+                <div className="flex items-start justify-between mb-4">
+                  <h2 className="font-display text-3xl text-orange-600">{currentNode.name}</h2>
+                  <span className="px-4 py-2 bg-gradient-to-r from-red-600/20 to-orange-600/20 text-red-500 text-sm font-bold rounded-lg border border-red-600/30 flex items-center gap-2 shadow-lg shadow-red-600/10">
+                    {trendIcons[currentNode.trend]}
+                    {trendLabels[currentNode.trend]}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 text-sm text-neutral-400">
+                  <span className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-orange-600"></div>
+                    {currentNode.paperCount} 篇论文
+                    {papersTotal > 0 && papersTotal !== currentNode.paperCount && (
+                      <span className="text-xs text-orange-500">
+                        (API返回 {papersTotal} 篇)
+                      </span>
+                    )}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-blue-600"></div>
+                    {currentNode.companyCount} 家公司
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-green-600"></div>
+                    {currentNode.signalCount} 条信号
+                  </span>
+                </div>
               </div>
 
               <div className="space-y-6">
                 {/* Description */}
-                <div>
-                  <h3 className="font-semibold text-lg mb-2 text-orange-600">技术简介</h3>
-                  <p className="text-neutral-400 leading-relaxed">{currentNode.description}</p>
+                <div className="bg-gradient-to-br from-neutral-800/50 to-neutral-800/30 rounded-xl p-5 border border-neutral-700/50">
+                  <h3 className="font-semibold text-base mb-3 text-orange-600 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-gradient-to-b from-orange-600 to-red-600 rounded-full"></div>
+                    技术简介
+                  </h3>
+                  <p className="text-neutral-300 leading-relaxed text-sm">{currentNode.description}</p>
                 </div>
 
                 {/* Maturity */}
-                <div>
-                  <h3 className="font-semibold text-lg mb-3 text-orange-600">技术成熟度</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 h-3 bg-neutral-800 rounded-full overflow-hidden">
+                <div className="bg-gradient-to-br from-neutral-800/50 to-neutral-800/30 rounded-xl p-5 border border-neutral-700/50">
+                  <h3 className="font-semibold text-base mb-4 text-orange-600 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-gradient-to-b from-orange-600 to-red-600 rounded-full"></div>
+                    技术成熟度
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1 h-4 bg-neutral-900 rounded-full overflow-hidden shadow-inner">
                         <div 
-                          className="h-full bg-gradient-to-r from-orange-600 to-red-600 transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-orange-600 via-orange-500 to-red-600 transition-all duration-500 shadow-lg"
                           style={{ width: `${stageProgress[currentNode.stage as keyof typeof stageProgress] || 50}%` }}
                         />
                       </div>
-                      <span className="text-sm font-semibold text-orange-600 min-w-[120px]">
+                      <span className="text-sm font-bold text-orange-500 min-w-[120px] px-3 py-1 bg-orange-600/10 rounded-lg border border-orange-600/30">
                         {currentNode.stage}
                       </span>
                     </div>
-                    <div className="flex justify-between text-xs text-neutral-500">
+                    <div className="flex justify-between text-xs text-neutral-500 px-1">
                       <span>理论研究</span>
                       <span>实验室</span>
                       <span>工程化</span>
@@ -239,114 +404,172 @@ export default function KnowledgeMap() {
                 </div>
 
                 {/* Academic Progress Timeline */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-lg text-orange-600 flex items-center gap-2">
-                      <BookOpen className="w-5 h-5" />
+                <div className="bg-gradient-to-br from-neutral-800/50 to-neutral-800/30 rounded-xl p-5 border border-neutral-700/50">
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className="font-semibold text-base text-orange-600 flex items-center gap-2">
+                      <div className="w-1 h-5 bg-gradient-to-b from-orange-600 to-red-600 rounded-full"></div>
                       学术进展时间线
+                      {papersLoading && <span className="text-xs text-neutral-500">(加载中...)</span>}
+                      {!papersLoading && papersTotal > 0 && (
+                        <span className="text-xs text-neutral-400">
+                          (共 {papersTotal} 篇{papers.length < papersTotal ? `，显示前 ${papers.length} 篇` : ''}{selectedYear !== 'all' ? `，筛选后 ${filteredPapers.length} 篇` : ''})
+                        </span>
+                      )}
                     </h3>
                     <select
                       value={selectedYear}
                       onChange={(e) => setSelectedYear(e.target.value)}
-                      className="bg-neutral-800 border border-neutral-700 rounded px-3 py-1.5 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
+                      className="bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
                     >
+                      <option value="all">全部年份</option>
                       <option value="2026">2026年</option>
                       <option value="2025">2025年</option>
                       <option value="2024">2024年</option>
                     </select>
                   </div>
 
-                  <div className="space-y-4">
-                    {mockPapers.map((paper, index) => (
-                      <div
-                        key={paper.id}
-                        className="relative pl-8 pb-4 border-l-2 border-neutral-700 last:border-l-0 last:pb-0 animate-in fade-in slide-in-from-left-4"
-                        style={{ animationDelay: `${index * 100}ms` }}
-                      >
-                        {/* Timeline dot */}
-                        <div className="absolute left-[-9px] top-0 w-4 h-4 bg-orange-600 rounded-full border-4 border-neutral-900"></div>
-                        
-                        <div className="bg-neutral-800 rounded-lg p-4 hover:bg-neutral-700 transition-all cursor-pointer group">
-                          {/* Header */}
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="px-2 py-0.5 bg-red-600/20 text-red-500 text-xs font-bold rounded border border-red-600/30">
-                                  {paper.journal}
-                                </span>
-                                <span className="text-xs text-neutral-500 flex items-center gap-1">
-                                  <Calendar className="w-3 h-3" />
-                                  {paper.date}
-                                </span>
-                              </div>
-                              <h4 className="font-semibold text-sm group-hover:text-orange-600 transition-colors">
-                                {paper.title}
-                              </h4>
-                            </div>
-                          </div>
+                  {filteredPapers.length > 0 ? (
+                    <>
+                      <div className="space-y-3 mb-5">
+                        {filteredPapers.map((paper, index) => {
+                          const publishDate = paper.metadata?.publish_date || paper.timestamp;
+                          const authors = paper.metadata?.authors || [];
+                          const firstAuthor = authors[0];
+                          const researchProblem = paper.metadata?.research_problem?.summary;
+                          const keyContributions = paper.metadata?.key_contributions || [];
+                          
+                          return (
+                            <div
+                              key={paper.id}
+                              onClick={() => handlePaperClick(paper.id)}
+                              className="relative pl-5 animate-in fade-in slide-in-from-left-4"
+                              style={{ animationDelay: `${index * 50}ms` }}
+                            >
+                              {/* Timeline connector */}
+                              {index < filteredPapers.length - 1 && (
+                                <div className="absolute left-[5px] top-5 bottom-0 w-px bg-gradient-to-b from-orange-600/40 via-orange-600/20 to-transparent"></div>
+                              )}
+                              
+                              {/* Timeline dot */}
+                              <div className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-gradient-to-br from-orange-600 to-red-600 shadow-md shadow-orange-600/40 ring-2 ring-neutral-900 group-hover:ring-orange-600/30 transition-all"></div>
+                              
+                              <div className="bg-gradient-to-br from-neutral-900/90 to-neutral-900/50 rounded-lg p-4 hover:from-neutral-800/90 hover:to-neutral-800/50 transition-all cursor-pointer group border border-neutral-800/50 hover:border-orange-600/40 hover:shadow-lg hover:shadow-orange-600/5">
+                                {/* Header */}
+                                <div className="flex items-start justify-between gap-3 mb-3">
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-semibold text-sm leading-snug group-hover:text-orange-600 transition-colors mb-2 line-clamp-2">
+                                      {paper.title}
+                                    </h4>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <span className="text-xs text-neutral-500 flex items-center gap-1">
+                                        <Calendar className="w-3 h-3" />
+                                        {publishDate}
+                                      </span>
+                                      {paper.metadata?.influence_score && (
+                                        <span className="px-1.5 py-0.5 bg-orange-600/15 text-orange-500 text-xs font-semibold rounded border border-orange-600/25 flex items-center gap-1">
+                                          <Sparkles className="w-3 h-3" />
+                                          {paper.metadata.influence_score}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
 
-                          {/* Content */}
-                          <div className="space-y-2 text-xs">
-                            <div className="flex items-start gap-2">
-                              <Users className="w-3 h-3 text-neutral-500 mt-0.5 flex-shrink-0" />
-                              <div>
-                                <span className="text-neutral-400">作者：</span>
-                                <span className="text-neutral-300">{paper.authors.join('、')}</span>
-                                <span className="text-neutral-500 ml-2">({paper.institution})</span>
-                              </div>
-                            </div>
+                                {/* Authors */}
+                                {authors.length > 0 && (
+                                  <div className="flex items-start gap-2 mb-2.5 text-xs">
+                                    <Users className="w-3 h-3 text-orange-600/60 mt-0.5 flex-shrink-0" />
+                                    <div className="flex-1 min-w-0">
+                                      <span className="text-neutral-300">
+                                        {authors.slice(0, 3).map((a: any) => a.name).join('、')}
+                                        {authors.length > 3 && ` 等${authors.length}人`}
+                                      </span>
+                                      {firstAuthor?.affiliation && (
+                                        <span className="text-neutral-500 ml-1.5">· {firstAuthor.affiliation}</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
 
-                            <div className="bg-neutral-900 rounded p-2">
-                              <div className="text-neutral-400 mb-1">关键突破：</div>
-                              <div className="text-neutral-300">{paper.breakthrough}</div>
-                            </div>
+                                {/* Research Problem - Compact */}
+                                {researchProblem && (
+                                  <div className="bg-blue-600/8 border border-blue-600/15 rounded-md p-2.5 mb-2.5">
+                                    <div className="text-xs text-blue-400/90 font-medium mb-1">研究问题</div>
+                                    <div className="text-xs text-neutral-300 leading-relaxed line-clamp-2">{researchProblem}</div>
+                                  </div>
+                                )}
 
-                            <div className="flex items-center gap-2">
-                              <span className="text-neutral-400">关键指标：</span>
-                              <span className="px-2 py-0.5 bg-orange-600/20 text-orange-600 rounded font-semibold">
-                                {paper.keyMetrics}
-                              </span>
-                            </div>
+                                {/* Key Contributions - Compact */}
+                                {keyContributions.length > 0 && (
+                                  <div className="mb-2.5">
+                                    <div className="text-xs text-green-400/90 font-medium mb-1.5">关键贡献</div>
+                                    <div className="space-y-1">
+                                      {keyContributions.slice(0, 2).map((contrib: any, idx: number) => (
+                                        <div key={idx} className="flex items-start gap-1.5 text-xs">
+                                          <span className="text-green-600/80 mt-0.5 text-[10px]">●</span>
+                                          <span className="text-neutral-300 leading-relaxed line-clamp-1 flex-1">
+                                            {contrib.summary || contrib.detail}
+                                          </span>
+                                        </div>
+                                      ))}
+                                      {keyContributions.length > 2 && (
+                                        <div className="text-xs text-neutral-500 ml-3.5">
+                                          还有 {keyContributions.length - 2} 项贡献
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
 
-                            {paper.relatedCompanies.length > 0 && (
-                              <div className="flex items-start gap-2">
-                                <Building2 className="w-3 h-3 text-neutral-500 mt-0.5 flex-shrink-0" />
-                                <div>
-                                  <span className="text-neutral-400">关联公司：</span>
-                                  <span className="text-neutral-300">{paper.relatedCompanies.join('、')}</span>
+                                {/* Footer */}
+                                <div className="flex items-center justify-between pt-2.5 border-t border-neutral-800/40">
+                                  <div className="flex items-center gap-2 text-xs text-neutral-500">
+                                    {paper.metadata?.domain_ids && paper.metadata.domain_ids.length > 0 && (
+                                      <span className="flex items-center gap-1">
+                                        <div className="w-1 h-1 rounded-full bg-neutral-600"></div>
+                                        {paper.metadata.domain_ids.length} 个领域
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-1 text-xs text-orange-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span>查看详情</span>
+                                    <ExternalLink className="w-3 h-3" />
+                                  </div>
                                 </div>
                               </div>
-                            )}
-
-                            <div className="flex items-center gap-2">
-                              <span className="text-neutral-400">技术领域：</span>
-                              <span className="text-neutral-300">{paper.techArea}</span>
                             </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Statistics */}
+                      <div className="grid grid-cols-3 gap-3 pt-4 border-t border-neutral-800/50">
+                        <div className="bg-neutral-900/50 rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-orange-600 mb-1">{filteredPapers.length}</div>
+                          <div className="text-xs text-neutral-400">相关论文</div>
+                        </div>
+                        <div className="bg-neutral-900/50 rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-orange-600 mb-1">
+                            {new Set(filteredPapers.flatMap(p => p.metadata?.authors?.map((a: any) => a.name) || [])).size}
                           </div>
+                          <div className="text-xs text-neutral-400">核心作者</div>
+                        </div>
+                        <div className="bg-neutral-900/50 rounded-lg p-3 text-center">
+                          <div className="text-2xl font-bold text-orange-600 mb-1">
+                            {new Set(filteredPapers.map(p => p.metadata?.authors?.[0]?.affiliation).filter(Boolean)).size}
+                          </div>
+                          <div className="text-xs text-neutral-400">研究机构</div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Statistics */}
-                  <div className="mt-6 grid grid-cols-3 gap-3">
-                    <div className="bg-neutral-800 rounded-lg p-3 text-center">
-                      <div className="text-2xl font-bold text-orange-600 mb-1">{mockPapers.length}</div>
-                      <div className="text-xs text-neutral-400">顶刊论文</div>
+                    </>
+                  ) : (
+                    <div className="text-center py-12 text-neutral-500">
+                      <div className="text-5xl mb-3">📄</div>
+                      <p className="text-sm">
+                        {papersLoading ? '加载论文数据中...' : selectedYear === 'all' ? '暂无相关论文' : `${selectedYear}年暂无论文数据`}
+                      </p>
                     </div>
-                    <div className="bg-neutral-800 rounded-lg p-3 text-center">
-                      <div className="text-2xl font-bold text-orange-600 mb-1">
-                        {new Set(mockPapers.flatMap(p => p.authors)).size}
-                      </div>
-                      <div className="text-xs text-neutral-400">核心作者</div>
-                    </div>
-                    <div className="bg-neutral-800 rounded-lg p-3 text-center">
-                      <div className="text-2xl font-bold text-orange-600 mb-1">
-                        {new Set(mockPapers.map(p => p.institution)).size}
-                      </div>
-                      <div className="text-xs text-neutral-400">研究机构</div>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Key Problems */}
@@ -433,6 +656,14 @@ export default function KnowledgeMap() {
           )}
         </div>
       </div>
+      
+      {/* Paper Detail Modal */}
+      {selectedPaper && (
+        <SignalDetailModal
+          signal={selectedPaper}
+          onClose={() => setSelectedPaper(null)}
+        />
+      )}
     </div>
   );
 }

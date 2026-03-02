@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom';
-import { Zap, Target, Map, Star, FileText } from 'lucide-react';
+import { Zap, Target, Map, Star, FileText, Users } from 'lucide-react';
 
 const navItems = [
   { to: '/signals', icon: Zap, label: '信号流' },
   { to: '/candidates', icon: Target, label: '候选标的' },
+  { to: '/researchers', icon: Users, label: '人才库' },
   { to: '/knowledge-map', icon: Map, label: '知识地图' },
   { to: '/focus', icon: Star, label: '我的关注' },
   { to: '/notes', icon: FileText, label: '我的笔记' },

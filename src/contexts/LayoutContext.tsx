@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface DraggedItem {
-  type: 'signal' | 'candidate' | 'note';
+  type: 'signal' | 'candidate' | 'note' | 'researcher';
   id: string;
   title: string;
   summary?: string;

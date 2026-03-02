@@ -13,6 +13,7 @@ export interface TechNode {
   trend: TechTrend;
   signalCount: number;
   companyCount: number;
+  paperCount?: number; // 论文数量
   children?: TechNode[];
 }
 

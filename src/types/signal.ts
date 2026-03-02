@@ -18,6 +18,7 @@ export interface Signal {
     people: number;
     technologies: number;
   };
+  metadata?: any; // 用于存储原始数据（如论文的详细字段）
 }
 
 export interface SignalDetail extends Signal {

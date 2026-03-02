@@ -1,25 +1,81 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SignalCard from '../components/SignalCard';
 import SignalDetailModal from '../components/SignalDetailModal';
 import { useSignals } from '../hooks/useSignals';
-import { Signal, SignalType } from '../types';
-import { realWorldSignals } from '../data/realWorldSignals';
+import { Signal, SignalType, SignalDetail } from '../types';
+import { signalApi } from '../api/signals';
 
-const signalTypes: (SignalType | '全部')[] = ['全部', '论文', '政策规划', '融资事件', '产业化进展', '技术发布', '人才组织'];
+const signalTypes: (SignalType | '全部')[] = ['全部', '政策规划', '融资事件', '产业化进展', '技术发布', '人才组织', '论文'];
 
 export default function SignalFeed() {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
-  const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null);
+  const [selectedSignal, setSelectedSignal] = useState<SignalDetail | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [typeCounts, setTypeCounts] = useState<Record<string, number>>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  
   const { signals, loading, filters, updateFilters } = useSignals({
     type: '全部',
     priority: 'all',
-    timeRange: 'all',  // 默认显示全部时间
+    timeRange: 'all',
+    page: currentPage,
+    pageSize: 20,
   });
 
-  // 用于统计的所有信号（未过滤）
-  const allSignals = realWorldSignals;
+  // 获取各类型的数量统计
+  useEffect(() => {
+    const fetchTypeCounts = async () => {
+      const counts: Record<string, number> = {};
+      
+      // 获取论文数量（真实API）
+      try {
+        const paperResponse = await signalApi.getSignals({ type: '论文', page: 1, pageSize: 1 });
+        counts['论文'] = paperResponse.total;
+      } catch (error) {
+        console.error('Failed to fetch paper count:', error);
+        counts['论文'] = 0;
+      }
+
+      // 获取其他类型数量（Mock数据）
+      for (const type of signalTypes) {
+        if (type !== '全部' && type !== '论文') {
+          const response = await signalApi.getSignals({ type, page: 1, pageSize: 1 });
+          counts[type] = response.total;
+        }
+      }
+
+      setTypeCounts(counts);
+    };
+
+    fetchTypeCounts();
+  }, []);
+
+  // 更新总数
+  useEffect(() => {
+    const fetchTotal = async () => {
+      const response = await signalApi.getSignals(filters);
+      setTotalCount(response.total);
+    };
+    fetchTotal();
+  }, [filters]);
+
+  // 处理信号点击，获取完整详情
+  const handleSignalClick = async (signal: Signal) => {
+    setLoadingDetail(true);
+    try {
+      const detail = await signalApi.getSignalById(signal.id);
+      setSelectedSignal(detail);
+    } catch (error) {
+      console.error('Failed to fetch signal detail:', error);
+      // 如果获取失败，使用列表中的数据
+      setSelectedSignal(signal as SignalDetail);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
 
   // Filter signals by search query
   const filteredSignals = searchQuery
@@ -30,6 +86,19 @@ export default function SignalFeed() {
       )
     : signals;
 
+  const handleTypeChange = (type: SignalType | '全部') => {
+    setCurrentPage(1);
+    updateFilters({ type, page: 1 });
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    updateFilters({ page });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const totalPages = Math.ceil(totalCount / 20);
+
   return (
     <div>
       {/* Page Header */}
@@ -39,7 +108,7 @@ export default function SignalFeed() {
           {searchQuery ? (
             <>搜索 "{searchQuery}" · 找到 {filteredSignals.length} 条信号</>
           ) : (
-            <>实时追踪量子科技领域的关键信号 · 共 {allSignals.length} 条信号</>
+            <>实时追踪量子科技领域的关键信号 · 共 {totalCount} 条信号</>
           )}
         </p>
       </div>
@@ -51,7 +120,7 @@ export default function SignalFeed() {
             {signalTypes.map((type) => (
               <button
                 key={type}
-                onClick={() => updateFilters({ type })}
+                onClick={() => handleTypeChange(type)}
                 className={`px-4 py-2 rounded font-medium text-sm cursor-pointer transition-all duration-200 ${
                   filters.type === type
                     ? 'bg-orange-600 text-white font-semibold shadow-lg shadow-orange-600/20'
@@ -59,9 +128,9 @@ export default function SignalFeed() {
                 }`}
               >
                 {type}
-                {type !== '全部' && (
+                {type !== '全部' && typeCounts[type] !== undefined && (
                   <span className="ml-2 text-xs opacity-70">
-                    ({allSignals.filter(s => s.type === type).length})
+                    ({typeCounts[type]})
                   </span>
                 )}
               </button>
@@ -84,9 +153,9 @@ export default function SignalFeed() {
               className="bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-sm font-medium cursor-pointer hover:border-orange-600 transition-colors focus:outline-none focus:border-orange-600"
             >
               <option value="all">优先级：全部</option>
-              <option value="high">高优先级 ({allSignals.filter(s => s.priority === 'high').length})</option>
-              <option value="mid">中优先级 ({allSignals.filter(s => s.priority === 'mid').length})</option>
-              <option value="low">低优先级 ({allSignals.filter(s => s.priority === 'low').length})</option>
+              <option value="high">高优先级</option>
+              <option value="mid">中优先级</option>
+              <option value="low">低优先级</option>
             </select>
           </div>
         </div>
@@ -110,15 +179,64 @@ export default function SignalFeed() {
                 >
                   <SignalCard 
                     signal={signal} 
-                    onClick={() => setSelectedSignal(signal)}
+                    onClick={() => handleSignalClick(signal)}
                   />
                 </div>
               ))}
               
-              {/* Load More Hint */}
-              <div className="text-center py-8">
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 py-8">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed rounded text-sm font-medium transition-colors"
+                  >
+                    上一页
+                  </button>
+                  
+                  <div className="flex gap-2">
+                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => handlePageChange(pageNum)}
+                          className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                            currentPage === pageNum
+                              ? 'bg-orange-600 text-white'
+                              : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed rounded text-sm font-medium transition-colors"
+                  >
+                    下一页
+                  </button>
+                </div>
+              )}
+
+              <div className="text-center py-4">
                 <p className="text-neutral-500 text-sm">
-                  已显示全部 {filteredSignals.length} 条信号
+                  第 {currentPage} / {totalPages} 页 · 共 {totalCount} 条信号
                 </p>
               </div>
             </>
@@ -137,11 +255,21 @@ export default function SignalFeed() {
       )}
 
       {/* Signal Detail Modal */}
-      {selectedSignal && (
+      {selectedSignal && !loadingDetail && (
         <SignalDetailModal
           signal={selectedSignal}
           onClose={() => setSelectedSignal(null)}
         />
+      )}
+
+      {/* Loading Detail Modal */}
+      {loadingDetail && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-lg p-12 text-center">
+            <div className="inline-block w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-neutral-400 mt-4">加载详情中...</p>
+          </div>
+        </div>
       )}
     </div>
   );

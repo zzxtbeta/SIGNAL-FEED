@@ -1,11 +1,11 @@
 import { X, Building2, User, Lightbulb, ExternalLink, MessageSquare, Bookmark, FileText } from 'lucide-react';
 import { useState } from 'react';
-import { Signal, SignalType } from '../types';
+import { SignalDetail, SignalType } from '../types';
 import { useAppContext } from '../contexts/AppContext';
 import { realWorldSignals } from '../data/realWorldSignals';
 
 interface SignalDetailModalProps {
-  signal: Signal;
+  signal: SignalDetail;
   onClose: () => void;
   onOpenChat?: () => void;
 }
@@ -140,24 +140,30 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
               为什么重要？
             </h3>
             <ul className="space-y-1 text-sm text-neutral-300">
-              {signal.priority === 'high' && (
+              {signal.whyImportant && signal.whyImportant.length > 0 ? (
+                signal.whyImportant.map((reason, idx) => (
+                  <li key={idx}>• {reason}</li>
+                ))
+              ) : (
                 <>
-                  <li>• 融资金额显著高于同类企业</li>
-                  <li>• 团队来自已关注的核心研究机构</li>
-                  <li>• 与近期政策导向高度相关</li>
-                </>
-              )}
-              {signal.priority === 'mid' && (
-                <>
-                  <li>• 技术突破具有代表性</li>
-                  <li>• 发表在顶级期刊</li>
-                  <li>• 可能影响未来技术路线选择</li>
-                </>
-              )}
-              {signal.priority === 'low' && (
-                <>
-                  <li>• 常规工商变更，无重大影响</li>
-                  <li>• 建议持续观察后续动态</li>
+                  {signal.priority === 'high' && (
+                    <>
+                      <li>• 代表量子科技领域重要进展</li>
+                      <li>• 涉及核心技术突破或产业化应用</li>
+                      <li>• 与国家战略规划高度相关</li>
+                    </>
+                  )}
+                  {signal.priority === 'mid' && (
+                    <>
+                      <li>• 技术突破具有代表性</li>
+                      <li>• 可能影响未来技术路线选择</li>
+                    </>
+                  )}
+                  {signal.priority === 'low' && (
+                    <>
+                      <li>• 常规进展，建议持续观察</li>
+                    </>
+                  )}
                 </>
               )}
             </ul>
@@ -172,28 +178,196 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
           {/* Structured Info */}
           <div>
             <h3 className="font-semibold text-lg mb-3">结构化要点</h3>
-            <div className="bg-neutral-800 rounded-lg p-4 space-y-2 text-sm">
-              {signal.type === '论文' && (
-                <>
-                  <div className="flex">
-                    <span className="text-neutral-500 w-24">期刊：</span>
-                    <span className="text-neutral-200">Nature</span>
+            
+            {signal.type === '论文' && signal.metadata ? (
+              <div className="space-y-4">
+                {/* 作者和机构 */}
+                {signal.metadata.authors && signal.metadata.authors.length > 0 && (
+                  <div className="bg-neutral-800 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <User className="w-4 h-4 text-orange-600" />
+                      <span className="text-sm font-semibold text-orange-600">作者</span>
+                    </div>
+                    <div className="space-y-2">
+                      {signal.metadata.authors.map((author: any, idx: number) => (
+                        <div key={idx} className="flex items-start gap-3 text-sm">
+                          <span className="text-neutral-400 min-w-[60px]">{author.name}</span>
+                          {author.affiliation && (
+                            <span className="text-neutral-300">{author.affiliation}</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex">
-                    <span className="text-neutral-500 w-24">研究机构：</span>
-                    <span className="text-neutral-200">中国科学技术大学</span>
+                )}
+
+                {/* 研究问题 */}
+                {signal.metadata.research_problem && (
+                  <div className="bg-gradient-to-br from-blue-600/10 to-blue-800/10 border border-blue-600/30 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-lg">🎯</span>
+                      <span className="text-sm font-semibold text-blue-400">研究问题</span>
+                    </div>
+                    {signal.metadata.research_problem.summary && (
+                      <div className="mb-2">
+                        <span className="text-xs text-neutral-500 block mb-1">核心问题：</span>
+                        <p className="text-sm text-neutral-200 leading-relaxed">
+                          {signal.metadata.research_problem.summary}
+                        </p>
+                      </div>
+                    )}
+                    {signal.metadata.research_problem.detail && (
+                      <div>
+                        <span className="text-xs text-neutral-500 block mb-1">详细描述：</span>
+                        <p className="text-xs text-neutral-300 leading-relaxed">
+                          {signal.metadata.research_problem.detail}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex">
-                    <span className="text-neutral-500 w-24">研究方向：</span>
-                    <span className="text-neutral-200">拓扑量子纠错</span>
+                )}
+
+                {/* 技术路线 */}
+                {signal.metadata.tech_route && (
+                  <div className="bg-gradient-to-br from-purple-600/10 to-purple-800/10 border border-purple-600/30 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-lg">🔬</span>
+                      <span className="text-sm font-semibold text-purple-400">技术路线</span>
+                    </div>
+                    {signal.metadata.tech_route.summary && (
+                      <div className="mb-2">
+                        <span className="text-xs text-neutral-500 block mb-1">方法概述：</span>
+                        <p className="text-sm text-neutral-200 leading-relaxed">
+                          {signal.metadata.tech_route.summary}
+                        </p>
+                      </div>
+                    )}
+                    {signal.metadata.tech_route.detail && (
+                      <div>
+                        <span className="text-xs text-neutral-500 block mb-1">技术细节：</span>
+                        <p className="text-xs text-neutral-300 leading-relaxed">
+                          {signal.metadata.tech_route.detail}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex">
-                    <span className="text-neutral-500 w-24">关键指标：</span>
-                    <span className="text-neutral-200">容错阈值 2.1%</span>
+                )}
+
+                {/* 关键贡献 */}
+                {signal.metadata.key_contributions && signal.metadata.key_contributions.length > 0 && (
+                  <div className="bg-gradient-to-br from-green-600/10 to-green-800/10 border border-green-600/30 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-lg">💡</span>
+                      <span className="text-sm font-semibold text-green-400">关键贡献</span>
+                    </div>
+                    <div className="space-y-3">
+                      {signal.metadata.key_contributions.map((contrib: any, idx: number) => (
+                        <div key={idx} className="border-l-2 border-green-600/50 pl-3">
+                          {contrib.summary && (
+                            <div className="mb-1">
+                              <span className="text-sm text-neutral-200 font-medium">
+                                {contrib.summary}
+                              </span>
+                            </div>
+                          )}
+                          {contrib.detail && (
+                            <p className="text-xs text-neutral-400 leading-relaxed">
+                              {contrib.detail}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </>
-              )}
-              {signal.type === '融资事件' && (
+                )}
+
+                {/* 关键指标 */}
+                {signal.metadata.metrics && signal.metadata.metrics.length > 0 && (
+                  <div className="bg-neutral-800 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-lg">📊</span>
+                      <span className="text-sm font-semibold text-orange-600">关键指标</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {signal.metadata.metrics.map((metric: any, idx: number) => (
+                        <div key={idx} className="bg-neutral-900 rounded p-3">
+                          {metric.name && (
+                            <div className="text-xs text-neutral-500 mb-1">{metric.name}</div>
+                          )}
+                          {metric.value && (
+                            <div className="text-sm text-orange-500 font-semibold">{metric.value}</div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 影响力分数 */}
+                {signal.metadata.influence_score !== undefined && signal.metadata.influence_score !== null && (
+                  <div className="bg-neutral-800 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold text-orange-600">影响力分数</span>
+                      <span className="text-2xl font-bold text-orange-500">
+                        {signal.metadata.influence_score}
+                      </span>
+                    </div>
+                    <div className="w-full h-2 bg-neutral-700 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-orange-600 to-red-600 transition-all duration-500"
+                        style={{ width: `${Math.min(signal.metadata.influence_score, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 摘要 */}
+                {signal.metadata.abstract && (
+                  <div className="bg-neutral-800 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <FileText className="w-4 h-4 text-orange-600" />
+                      <span className="text-sm font-semibold text-orange-600">论文摘要</span>
+                    </div>
+                    <p className="text-xs text-neutral-300 leading-relaxed">
+                      {signal.metadata.abstract}
+                    </p>
+                  </div>
+                )}
+
+                {/* 发表信息 */}
+                <div className="bg-neutral-800 rounded-lg p-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    {signal.metadata.publish_date && (
+                      <div>
+                        <span className="text-neutral-500 block mb-1">发表日期</span>
+                        <span className="text-neutral-200">{signal.metadata.publish_date}</span>
+                      </div>
+                    )}
+                    {signal.metadata.paper_id && (
+                      <div>
+                        <span className="text-neutral-500 block mb-1">论文ID</span>
+                        <span className="text-neutral-200 font-mono text-xs">{signal.metadata.paper_id}</span>
+                      </div>
+                    )}
+                    {signal.metadata.domain_ids && signal.metadata.domain_ids.length > 0 && (
+                      <div className="col-span-2">
+                        <span className="text-neutral-500 block mb-2">研究领域</span>
+                        <div className="flex flex-wrap gap-2">
+                          {signal.metadata.domain_ids.map((domainId: number, idx: number) => (
+                            <span key={idx} className="px-2 py-1 bg-neutral-700 text-neutral-300 text-xs rounded">
+                              领域 {domainId}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // 非论文类型的原有显示逻辑
+              <div className="bg-neutral-800 rounded-lg p-4 space-y-2 text-sm">
+                {signal.type === '融资事件' && (
                 <>
                   <div className="flex">
                     <span className="text-neutral-500 w-24">公司：</span>
@@ -242,6 +416,7 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
                 </>
               )}
             </div>
+            )}
           </div>
 
           {/* Related Entities */}
@@ -288,112 +463,114 @@ export default function SignalDetailModal({ signal, onClose, onOpenChat }: Signa
           </div>
 
           {/* Related Signals with Tabs */}
-          <div>
-            <h3 className="font-semibold text-lg mb-3">相关信号</h3>
-            
-            {/* Signal Type Tabs */}
-            <div className="flex gap-2 mb-3 overflow-x-auto">
-              <button 
-                onClick={() => setActiveTab('全部')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
-                  activeTab === '全部' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
-                }`}
-              >
-                全部 ({relatedSignals.length})
-              </button>
-              <button 
-                onClick={() => setActiveTab('论文')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
-                  activeTab === '论文' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
-                }`}
-              >
-                论文 ({relatedSignals.filter(s => s.type === '论文').length})
-              </button>
-              <button 
-                onClick={() => setActiveTab('政策规划')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
-                  activeTab === '政策规划' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
-                }`}
-              >
-                政策规划 ({relatedSignals.filter(s => s.type === '政策规划').length})
-              </button>
-              <button 
-                onClick={() => setActiveTab('融资事件')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
-                  activeTab === '融资事件' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
-                }`}
-              >
-                融资事件 ({relatedSignals.filter(s => s.type === '融资事件').length})
-              </button>
-              <button 
-                onClick={() => setActiveTab('产业化进展')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
-                  activeTab === '产业化进展' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
-                }`}
-              >
-                产业化进展 ({relatedSignals.filter(s => s.type === '产业化进展').length})
-              </button>
-              <button 
-                onClick={() => setActiveTab('技术发布')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
-                  activeTab === '技术发布' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
-                }`}
-              >
-                技术发布 ({relatedSignals.filter(s => s.type === '技术发布').length})
-              </button>
-              <button 
-                onClick={() => setActiveTab('人才组织')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
-                  activeTab === '人才组织' 
-                    ? 'bg-orange-600 text-white' 
-                    : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
-                }`}
-              >
-                人才组织 ({relatedSignals.filter(s => s.type === '人才组织').length})
-              </button>
-            </div>
+          {signal.type !== '论文' && (
+            <div>
+              <h3 className="font-semibold text-lg mb-3">相关信号</h3>
+              
+              {/* Signal Type Tabs */}
+              <div className="flex gap-2 mb-3 overflow-x-auto">
+                <button 
+                  onClick={() => setActiveTab('全部')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
+                    activeTab === '全部' 
+                      ? 'bg-orange-600 text-white' 
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                  }`}
+                >
+                  全部 ({relatedSignals.length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('论文')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
+                    activeTab === '论文' 
+                      ? 'bg-orange-600 text-white' 
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                  }`}
+                >
+                  论文 ({relatedSignals.filter(s => s.type === '论文').length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('政策规划')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
+                    activeTab === '政策规划' 
+                      ? 'bg-orange-600 text-white' 
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                  }`}
+                >
+                  政策规划 ({relatedSignals.filter(s => s.type === '政策规划').length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('融资事件')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
+                    activeTab === '融资事件' 
+                      ? 'bg-orange-600 text-white' 
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                  }`}
+                >
+                  融资事件 ({relatedSignals.filter(s => s.type === '融资事件').length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('产业化进展')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
+                    activeTab === '产业化进展' 
+                      ? 'bg-orange-600 text-white' 
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                  }`}
+                >
+                  产业化进展 ({relatedSignals.filter(s => s.type === '产业化进展').length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('技术发布')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
+                    activeTab === '技术发布' 
+                      ? 'bg-orange-600 text-white' 
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                  }`}
+                >
+                  技术发布 ({relatedSignals.filter(s => s.type === '技术发布').length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('人才组织')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded whitespace-nowrap transition-colors ${
+                    activeTab === '人才组织' 
+                      ? 'bg-orange-600 text-white' 
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                  }`}
+                >
+                  人才组织 ({relatedSignals.filter(s => s.type === '人才组织').length})
+                </button>
+              </div>
 
-            {/* Related Signals List */}
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {filteredRelatedSignals.length > 0 ? (
-                filteredRelatedSignals.map((relatedSignal) => (
-                  <button 
-                    key={relatedSignal.id}
-                    onClick={() => {
-                      onClose();
-                      // In real app, would open this signal's detail
-                      setTimeout(() => alert(`查看信号: ${relatedSignal.title}`), 100);
-                    }}
-                    className="w-full bg-neutral-800 rounded p-3 hover:bg-neutral-700 transition-colors cursor-pointer text-left"
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-semibold line-clamp-1">{relatedSignal.title}</span>
-                      <span className="text-xs text-neutral-500 ml-2 whitespace-nowrap">{relatedSignal.timestamp}</span>
-                    </div>
-                    <div className="text-xs text-neutral-400">
-                      {relatedSignal.type} · {relatedSignal.priority === 'high' ? '高' : relatedSignal.priority === 'mid' ? '中' : '低'}优先级
-                    </div>
-                  </button>
-                ))
-              ) : (
-                <div className="text-center py-6 text-neutral-500 text-sm">
-                  暂无 {activeTab} 类型的相关信号
-                </div>
-              )}
+              {/* Related Signals List */}
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {filteredRelatedSignals.length > 0 ? (
+                  filteredRelatedSignals.map((relatedSignal) => (
+                    <button 
+                      key={relatedSignal.id}
+                      onClick={() => {
+                        onClose();
+                        // In real app, would open this signal's detail
+                        setTimeout(() => alert(`查看信号: ${relatedSignal.title}`), 100);
+                      }}
+                      className="w-full bg-neutral-800 rounded p-3 hover:bg-neutral-700 transition-colors cursor-pointer text-left"
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-semibold line-clamp-1">{relatedSignal.title}</span>
+                        <span className="text-xs text-neutral-500 ml-2 whitespace-nowrap">{relatedSignal.timestamp}</span>
+                      </div>
+                      <div className="text-xs text-neutral-400">
+                        {relatedSignal.type} · {relatedSignal.priority === 'high' ? '高' : relatedSignal.priority === 'mid' ? '中' : '低'}优先级
+                      </div>
+                    </button>
+                  ))
+                ) : (
+                  <div className="text-center py-6 text-neutral-500 text-sm">
+                    暂无 {activeTab} 类型的相关信号
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-4 border-t border-neutral-800">

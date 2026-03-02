@@ -4,6 +4,7 @@ export * from './signal';
 export * from './domain';
 export * from './company';
 export * from './chat';
+export * from './people';
 
 // API通用类型
 export interface ApiResponse<T> {

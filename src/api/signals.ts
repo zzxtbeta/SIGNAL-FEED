@@ -3,6 +3,8 @@
 import { apiClient, useMock } from './client';
 import { SignalDetail, SignalFilters, SignalListResponse } from '../types';
 import { realWorldSignals } from '../data/realWorldSignals';
+import { BackendPapersResponse } from '../types/backend';
+import { adaptPapersResponse, adaptPaperToSignalDetail } from '../adapters/paperAdapter';
 
 export const signalApi = {
   /**
@@ -10,22 +12,19 @@ export const signalApi = {
    */
   getSignals: async (filters?: SignalFilters): Promise<SignalListResponse> => {
     if (useMock) {
-      // Mock实现 - 使用真实量子科技数据
-      await new Promise(resolve => setTimeout(resolve, 300)); // 模拟网络延迟
+      // Mock实现
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       let filteredSignals = [...realWorldSignals];
       
-      // 类型筛选
       if (filters?.type && filters.type !== '全部') {
         filteredSignals = filteredSignals.filter(s => s.type === filters.type);
       }
       
-      // 优先级筛选
       if (filters?.priority && filters.priority !== 'all') {
         filteredSignals = filteredSignals.filter(s => s.priority === filters.priority);
       }
 
-      // 时间范围筛选
       if (filters?.timeRange && filters.timeRange !== 'all') {
         const days = parseInt(filters.timeRange);
         const cutoffDate = new Date();
@@ -33,7 +32,6 @@ export const signalApi = {
         filteredSignals = filteredSignals.filter(s => new Date(s.timestamp) >= cutoffDate);
       }
 
-      // 分页
       const page = filters?.page || 1;
       const pageSize = filters?.pageSize || 20;
       const start = (page - 1) * pageSize;
@@ -48,13 +46,66 @@ export const signalApi = {
     }
 
     // 真实API实现
-    return apiClient.get<SignalListResponse>('/signals', {
-      type: filters?.type !== '全部' ? filters?.type : undefined,
-      priority: filters?.priority !== 'all' ? filters?.priority : undefined,
-      time_range: filters?.timeRange,
-      page: filters?.page,
-      page_size: filters?.pageSize,
-    });
+    try {
+      // 论文类型：使用真实API
+      if (filters?.type === '论文') {
+        const response = await apiClient.get<BackendPapersResponse>('/papers', {
+          page: filters?.page || 1,
+          page_size: filters?.pageSize || 20,
+        });
+
+        const paperSignals = adaptPapersResponse(response.papers);
+
+        return {
+          total: response.total,
+          page: response.page,
+          pageSize: response.page_size,
+          signals: paperSignals,
+        };
+      }
+
+      // 其他类型：使用Mock数据
+      if (filters?.type && filters.type !== '全部') {
+        const mockSignals = realWorldSignals.filter(s => s.type === filters.type);
+        return {
+          total: mockSignals.length,
+          page: 1,
+          pageSize: mockSignals.length,
+          signals: mockSignals,
+        };
+      }
+
+      // 全部类型：混合真实论文 + Mock其他类型
+      const paperResponse = await apiClient.get<BackendPapersResponse>('/papers', {
+        page: 1,
+        page_size: 20, // 只取前20篇论文
+      });
+      const paperSignals = adaptPapersResponse(paperResponse.papers);
+      const otherSignals = realWorldSignals.filter(s => s.type !== '论文');
+      
+      // 合并并按时间排序（最新的在前）
+      const allSignals = [...paperSignals, ...otherSignals].sort((a, b) => {
+        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+      });
+
+      return {
+        total: paperResponse.total + otherSignals.length,
+        page: 1,
+        pageSize: allSignals.length,
+        signals: allSignals,
+      };
+    } catch (error) {
+      console.error('Failed to fetch papers from API, falling back to mock:', error);
+      const filteredSignals = realWorldSignals.filter(s => 
+        !filters?.type || filters.type === '全部' || s.type === filters.type
+      );
+      return {
+        total: filteredSignals.length,
+        page: 1,
+        pageSize: filteredSignals.length,
+        signals: filteredSignals,
+      };
+    }
   },
 
   /**
@@ -75,6 +126,30 @@ export const signalApi = {
           '与国家战略规划高度相关',
         ],
       };
+    }
+
+    // 真实API - 论文详情
+    if (id.startsWith('paper-')) {
+      const paperId = id.replace('paper-', '');
+      try {
+        // 由于没有单个论文详情API，使用列表API获取
+        // 先尝试从列表中查找
+        const response = await apiClient.get<BackendPapersResponse>('/papers', {
+          page: 1,
+          page_size: 100, // 获取更多以增加找到的概率
+        });
+        
+        const paper = response.papers.find(p => p.id.toString() === paperId);
+        if (paper) {
+          const signalDetail = adaptPaperToSignalDetail(paper);
+          return signalDetail;
+        }
+        
+        throw new Error(`Paper not found: ${paperId}`);
+      } catch (error) {
+        console.error('Failed to fetch paper detail:', error);
+        throw new Error(`Paper not found: ${paperId}`);
+      }
     }
 
     return apiClient.get<SignalDetail>(`/signals/${id}`);

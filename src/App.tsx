@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import SignalFeed from './pages/SignalFeed';
 import KnowledgeMap from './pages/KnowledgeMap';
 import Candidates from './pages/Candidates';
+import Researchers from './pages/Researchers';
 import MyFocus from './pages/MyFocus';
 import MyNotes from './pages/MyNotes';
 import Chat from './pages/Chat';
@@ -19,6 +20,7 @@ function App() {
               <Route index element={<Navigate to="/signals" replace />} />
               <Route path="signals" element={<SignalFeed />} />
               <Route path="candidates" element={<Candidates />} />
+              <Route path="researchers" element={<Researchers />} />
               <Route path="knowledge-map" element={<KnowledgeMap />} />
               <Route path="focus" element={<MyFocus />} />
               <Route path="notes" element={<MyNotes />} />
